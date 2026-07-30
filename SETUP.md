@@ -61,15 +61,39 @@ Renseigner `FINGERPRINT_SALT` dans `.env.local` et dans Vercel.
 
 ## Étape 3 — Vérifier les identifiants de modèle (le risque n°1)
 
-**C'est l'étape la plus importante du document.** Le code utilise trois
-identifiants qui viennent du cahier des charges et qui n'ont **jamais** été
-confrontés à l'API :
+> **Vérifié le 30/07/2026** contre le catalogue officiel
+> (https://ai.google.dev/gemini-api/docs/models). Résultat : deux identifiants
+> sur trois étaient bons, **le troisième n'existait pas**.
+>
+> | Identifiant | Rôle | Verdict |
+> |---|---|---|
+> | `gemini-3.1-flash-image` | 8 templates sur 10 | ✅ valide — stable, « Nano Banana 2 » |
+> | `gemini-3-pro-image` | chèque géant, une de magazine | ✅ valide — stable, « Nano Banana Pro » |
+> | ~~`gemini-3.1-flash`~~ | modération | ❌ **inexistant** → corrigé en `gemini-3.6-flash` |
+>
+> La famille 3.1 ne contient que `gemini-3.1-flash-lite`, `-flash-image`,
+> `-flash-lite-image`, `-flash-live-preview` et `-flash-tts-preview`. Il n'y a
+> pas de `gemini-3.1-flash` tout court.
+>
+> **Conséquence évitée :** la modération étant fail-closed, un identifiant
+> introuvable faisait refuser **100 % des générations**, y compris avec une clé
+> valide et la facturation active — et sans rien qui pointe vers la cause.
+>
+> Le défaut est maintenant `gemini-3.6-flash` dans
+> `lib/image-engine/gemini-moderation.ts` et dans `scripts/doctor.ts`. Aucune
+> variable d'environnement n'est nécessaire ; `GEMINI_MODERATION_MODEL` reste
+> disponible pour basculer sur `gemini-3.5-flash-lite` (5× moins cher en entrée)
+> une fois le taux de faux refus mesuré.
+>
+> **Rupture d'API liée, corrigée en même temps :** `temperature`, `top_p` et
+> `top_k` sont dépréciés depuis Gemini 3.6 Flash — ignorés aujourd'hui,
+> **erreur 400 sur les prochaines générations de modèles**. Le `temperature: 0`
+> de la modération donnait donc un faux déterminisme sur une décision à
+> conséquences juridiques ; il est remplacé par une `systemInstruction`
+> explicite.
 
-| Identifiant | Rôle | Où |
-|---|---|---|
-| `gemini-3.1-flash-image` | 8 templates sur 10 | `lib/image-engine/gemini.ts` → `DEFAULT_MODEL` |
-| `gemini-3-pro-image` | chèque géant, une de magazine | `lib/image-engine/gemini.ts` → `PRO_MODEL` |
-| `gemini-3.1-flash` | modération, avant **chaque** génération | surchargeable par `GEMINI_MODERATION_MODEL` |
+Le contrôle reste utile pour confirmer l'accès réel de ta clé aux trois
+modèles :
 
 Dès que la clé est en place :
 
