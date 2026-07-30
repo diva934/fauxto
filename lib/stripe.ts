@@ -16,9 +16,16 @@ export function stripe(): Stripe {
   return cached;
 }
 
-/** Clés de métadonnées utilisées sur la session Checkout. */
+/**
+ * Clés de métadonnées portées par la session Checkout.
+ *
+ * `userId` a remplacé `email` : le webhook créditait auparavant le compte
+ * trouvé PAR ADRESSE, ce qui permettait de payer en indiquant l'adresse d'un
+ * tiers et de créditer son compte. L'identifiant vient désormais de la session
+ * serveur au moment de créer la session Stripe.
+ */
 export const CHECKOUT_METADATA = {
   packId: 'fauxto_pack_id',
   credits: 'fauxto_credits',
-  email: 'fauxto_email',
+  userId: 'fauxto_user_id',
 } as const;

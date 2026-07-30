@@ -13,10 +13,18 @@ import { cn, formatPrice } from '@/lib/utils';
  * d'inscription, pas de mot de passe, pas de détour. Le compte est créé par le
  * webhook après paiement, et le lien de connexion arrive par e-mail.
  */
+/**
+ * Sélecteur de pack.
+ *
+ * L'e-mail n'est plus saisi ici : le paiement exige une session, et le compte
+ * est donc déjà créé quand ce composant s'affiche. `/credits` montre le
+ * formulaire de connexion à la place quand personne n'est identifié.
+ */
 export function PackPicker({
   knownEmail,
   next,
 }: {
+  /** E-mail du compte connecté, affiché à titre de confirmation. */
   knownEmail: string | null;
   /** Page vers laquelle revenir après paiement (le prank en cours). */
   next?: string;
@@ -24,13 +32,10 @@ export function PackPicker({
   const [selected, setSelected] = useState<CreditPack>(
     PACKS.find((pack) => pack.highlight) ?? PACKS[0],
   );
-  const [email, setEmail] = useState(knownEmail ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const needsEmail = !knownEmail;
-  const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
-  const canSubmit = !loading && (!needsEmail || emailLooksValid);
+  const canSubmit = !loading;
 
   const checkout = async (): Promise<void> => {
     setLoading(true);
@@ -41,7 +46,6 @@ export function PackPicker({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           packId: selected.id,
-          ...(needsEmail ? { email: email.trim() } : {}),
           ...(next ? { next } : {}),
         }),
       });
@@ -111,24 +115,10 @@ export function PackPicker({
         );
       })}
 
-      {needsEmail ? (
-        <label className="block pt-2">
-          <span className="text-sm font-medium text-muted">
-            Ton e-mail — pour recevoir tes crédits
-          </span>
-          <input
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            placeholder="toi@exemple.fr"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="mt-1 min-h-touch w-full rounded-card border border-line bg-surface px-4 text-base text-text placeholder:text-muted/60 focus:border-accent focus:outline-none"
-          />
-          <span className="mt-1 block text-xs text-muted">
-            Aucun mot de passe à créer. Tu recevras un lien de connexion.
-          </span>
-        </label>
+      {knownEmail ? (
+        <p className="pt-1 text-center text-xs text-muted">
+          Les crédits seront ajoutés à <strong className="text-text">{knownEmail}</strong>
+        </p>
       ) : null}
 
       {error ? (

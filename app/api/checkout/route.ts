@@ -60,12 +60,18 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Ce pack n’existe pas.' }, { status: 400 });
   }
 
+  // Authentification OBLIGATOIRE.
+  //
+  // L'ancien modèle acceptait un e-mail libre parce que le compte naissait au
+  // paiement. C'était une faille dans le nouveau tunnel : on pouvait lancer un
+  // paiement en indiquant l'adresse d'un tiers, et le webhook, qui retrouvait
+  // le compte PAR E-MAIL, aurait crédité ce tiers. On identifie donc par
+  // l'identifiant de session, jamais par une valeur venue du client.
   const user = await currentUser();
-  const email = user?.email ?? parsed.email;
-  if (!email) {
+  if (!user) {
     return Response.json(
-      { error: 'Indique ton e-mail pour recevoir tes crédits.' },
-      { status: 400 },
+      { error: 'Connecte-toi avant de payer.' },
+      { status: 401 },
     );
   }
 
@@ -76,7 +82,7 @@ export async function POST(request: Request): Promise<Response> {
     const session = await stripe().checkout.sessions.create({
       // Paiement unique, jamais d'abonnement.
       mode: 'payment',
-      customer_email: email,
+      customer_email: user.email ?? undefined,
       line_items: [
         {
           quantity: 1,
@@ -91,11 +97,13 @@ export async function POST(request: Request): Promise<Response> {
         },
       ],
       // Ces métadonnées sont la seule source de vérité du webhook : il ne
-      // recalcule jamais le nombre de crédits depuis le montant payé.
+      // recalcule jamais le nombre de crédits depuis le montant payé, et il ne
+      // retrouve plus le compte par e-mail. `userId` vient de la session
+      // serveur, jamais du corps de la requête.
       metadata: {
         [CHECKOUT_METADATA.packId]: pack.id,
         [CHECKOUT_METADATA.credits]: String(pack.credits),
-        [CHECKOUT_METADATA.email]: email,
+        [CHECKOUT_METADATA.userId]: user.id,
       },
       // On repasse par /credits/merci, qui attend la confirmation du webhook
       // avant de renvoyer l'acheteur là où il en était. Revenir directement sur

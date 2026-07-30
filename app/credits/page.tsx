@@ -1,6 +1,7 @@
 import { Infinity as InfinityIcon, ShieldCheck, Zap } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SignInForm } from '@/components/account/SignInForm';
 import { PackPicker } from '@/components/funnel/PackPicker';
 import { getCredits } from '@/lib/credits';
 import { currentUser } from '@/lib/supabase/server';
@@ -62,7 +63,14 @@ export default async function CreditsPage({
         </p>
       ) : null}
 
-      <PackPicker knownEmail={user?.email ?? null} next={returnPath} />
+      {/* Le paiement exige une session : sans compte, proposer les packs
+          enverrait l'utilisateur vers un 401 après avoir choisi. On demande
+          donc la connexion d'abord, en conservant sa destination. */}
+      {user ? (
+        <PackPicker knownEmail={user.email} next={returnPath} />
+      ) : (
+        <SignInForm next={returnPath} />
+      )}
 
       <ul className="mt-6 space-y-3 rounded-card border border-line bg-surface p-4">
         <li className="flex items-start gap-3 text-sm">
