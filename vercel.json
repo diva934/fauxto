@@ -3,8 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/purge",
-      "comment": "Purge RGPD des images de plus de 24 h. Toutes les heures : la fenêtre de conservation reste ainsi sous 25 h dans le pire cas.",
-      "schedule": "0 * * * *"
+      "schedule": "0 3 * * *"
     }
   ],
   "functions": {
