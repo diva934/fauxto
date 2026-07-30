@@ -8,27 +8,38 @@ import { currentUser } from '@/lib/supabase/server';
 export const metadata: Metadata = {
   title: 'Recharger',
   description:
-    'Packs de crédits à partir de 2,99 €. Paiement unique, pas d’abonnement, crédits sans expiration.',
+    '1 € la photo à l’unité, dès 0,50 € par lot. Paiement unique, pas d’abonnement, crédits sans expiration.',
   robots: { index: false, follow: true },
 };
 
 export const dynamic = 'force-dynamic';
 
-export default async function CreditsPage() {
+export default async function CreditsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; paiement?: string }>;
+}) {
+  const { next, paiement } = await searchParams;
   const user = await currentUser();
   const credits = user ? await getCredits(user.id) : 0;
+
+  const returnPath = next && /^\/creer\/[a-z0-9-]{1,60}$/.test(next) ? next : undefined;
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 safe-top safe-bottom">
       <header className="py-4">
         <Link
-          href="/creer"
+          href={returnPath ?? '/creer'}
           className="inline-flex min-h-touch items-center text-sm text-muted hover:text-text"
         >
           ← Retour
         </Link>
         <h1 className="mt-1 text-3xl font-extrabold leading-tight tracking-tight">
-          {credits > 0 ? 'Recharge tes pranks' : 'Continue à piéger tes potes'}
+          {credits > 0
+            ? 'Recharge tes pranks'
+            : returnPath
+              ? 'Plus qu’une étape'
+              : 'Choisis ta formule'}
         </h1>
         <p className="mt-2 text-base text-muted">
           {credits > 0 ? (
@@ -37,13 +48,21 @@ export default async function CreditsPage() {
               <span className="font-semibold text-text">{credits}</span>{' '}
               {credits > 1 ? 'crédits' : 'crédit'}.
             </>
+          ) : returnPath ? (
+            <>Ta photo est gardée de côté. Choisis, paie, et elle se génère.</>
           ) : (
-            <>Ta photo offerte est passée. La suite est sans filigrane.</>
+            <>À partir d’un euro l’unité. Moins cher par lot.</>
           )}
         </p>
       </header>
 
-      <PackPicker knownEmail={user?.email ?? null} />
+      {paiement === 'annule' ? (
+        <p className="mb-4 rounded-card bg-surface-2 p-3 text-sm text-muted" role="status">
+          Paiement annulé — rien ne t’a été débité. Ta photo est toujours là.
+        </p>
+      ) : null}
+
+      <PackPicker knownEmail={user?.email ?? null} next={returnPath} />
 
       <ul className="mt-6 space-y-3 rounded-card border border-line bg-surface p-4">
         <li className="flex items-start gap-3 text-sm">
@@ -56,8 +75,8 @@ export default async function CreditsPage() {
         <li className="flex items-start gap-3 text-sm">
           <Zap className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden />
           <span>
-            <strong className="text-text">Plus de filigrane.</strong> Le nom de
-            domaine disparaît de tes images.
+            <strong className="text-text">Aucun filigrane.</strong> Tes images
+            sortent propres, quel que soit le pack.
           </span>
         </li>
         <li className="flex items-start gap-3 text-sm">

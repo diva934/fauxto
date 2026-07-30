@@ -23,11 +23,14 @@ const ERRORS: Record<string, string> = {
 export default async function ComptePage({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string }>;
+  searchParams: Promise<{ erreur?: string; next?: string }>;
 }) {
-  const { erreur } = await searchParams;
+  const { erreur, next } = await searchParams;
   const user = await currentUser();
   const credits = user ? await getCredits(user.id) : 0;
+
+  // Arrivé ici depuis un prank en cours : on le renvoie là-bas une fois connecté.
+  const returnPath = next && /^\/creer\/[a-z0-9-]{1,60}$/.test(next) ? next : undefined;
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 safe-top safe-bottom">
@@ -52,9 +55,11 @@ export default async function ComptePage({
       {!user ? (
         <>
           <p className="mb-5 text-base leading-snug text-muted">
-            Connecte-toi pour retrouver tes crédits sur n’importe quel appareil.
+            {returnPath
+              ? 'Encore une étape : entre ton e-mail, on garde ta photo de côté.'
+              : 'Connecte-toi pour retrouver tes crédits sur n’importe quel appareil.'}
           </p>
-          <SignInForm />
+          <SignInForm next={returnPath} />
         </>
       ) : (
         <div className="space-y-4">

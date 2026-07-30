@@ -58,8 +58,8 @@ export default async function HomePage() {
         ) : (
           <p className="bg-glass mx-auto flex w-fit items-center gap-1.5 rounded-pill px-3 py-1.5 text-xs">
             <Sparkles className="size-3.5 text-accent-strong" aria-hidden />
-            <span className="font-bold">Première photo offerte</span>
-            <span className="text-muted">sans inscription</span>
+            <span className="font-bold">Dès 1 €</span>
+            <span className="text-muted">la photo</span>
           </p>
         )}
 
@@ -82,7 +82,7 @@ export default async function HomePage() {
         <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[13px] text-muted">
           <li className="flex items-center gap-1.5">
             <Check className="size-3.5 text-accent-strong" aria-hidden />
-            Sans compte
+            Sans abonnement
           </li>
           <li className="flex items-center gap-1.5">
             <InfinityIcon className="size-3.5 text-accent-strong" aria-hidden />
@@ -122,8 +122,8 @@ export default async function HomePage() {
             Alors, tu piéges qui ?
           </h2>
           <p className="mx-auto mt-2 max-w-xs text-[15px] leading-snug text-muted">
-            La première est offerte. Pas de compte, pas de carte, pas de raison
-            d’hésiter.
+            Un euro la première photo. Pas d’abonnement, pas de reconduction,
+            pas de piège.
           </p>
           <Button asChild size="xl" block className="glow-accent mt-5 text-lg">
             <Link href="/creer">Créer ma photo</Link>

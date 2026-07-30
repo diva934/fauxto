@@ -21,7 +21,24 @@ const bodySchema = z.object({
   packId: z.string().min(1),
   // Requis seulement si l'utilisateur n'est pas déjà connecté.
   email: z.string().email().optional(),
+  /** Page vers laquelle revenir après paiement. */
+  next: z.string().max(200).optional(),
 });
+
+/**
+ * Destinations autorisées au retour de Stripe.
+ *
+ * Sans cette liste blanche, `next` deviendrait une redirection ouverte : un
+ * lien de paiement portant notre domaine pourrait renvoyer l'acheteur vers un
+ * site tiers juste après sa saisie de carte. Exactement le scénario recherché
+ * en hameçonnage.
+ */
+function safeReturnPath(next: string | undefined): string {
+  if (!next) return '/creer';
+  if (['/creer', '/compte', '/credits', '/'].includes(next)) return next;
+  if (/^\/creer\/[a-z0-9-]{1,60}$/.test(next)) return next;
+  return '/creer';
+}
 
 export async function POST(request: Request): Promise<Response> {
   if (!hasStripe()) {
@@ -53,6 +70,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const siteUrl = serverEnv.siteUrl;
+  const returnPath = safeReturnPath(parsed.next);
 
   try {
     const session = await stripe().checkout.sessions.create({
@@ -79,8 +97,12 @@ export async function POST(request: Request): Promise<Response> {
         [CHECKOUT_METADATA.credits]: String(pack.credits),
         [CHECKOUT_METADATA.email]: email,
       },
-      success_url: `${siteUrl}/credits/merci?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/credits?annule=1`,
+      // On repasse par /credits/merci, qui attend la confirmation du webhook
+      // avant de renvoyer l'acheteur là où il en était. Revenir directement sur
+      // la page de génération l'exposerait à un solde encore à zéro : Stripe
+      // redirige plus vite que le webhook n'arrive.
+      success_url: `${siteUrl}/credits/merci?retour=${encodeURIComponent(returnPath)}`,
+      cancel_url: `${siteUrl}${returnPath}?paiement=annule`,
       locale: 'fr',
       // Les CGV sont accessibles depuis la page, on n'ajoute pas de friction.
       allow_promotion_codes: false,

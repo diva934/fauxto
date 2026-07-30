@@ -123,9 +123,10 @@ async function createGenerationRow(input: {
     .insert({
       template_id: input.templateId,
       status: 'pending',
-      user_id: input.entitlement.kind === 'credit' ? input.entitlement.userId : null,
-      anon_session_id:
-        input.entitlement.kind === 'free' ? input.entitlement.anonSessionId : null,
+      user_id: input.entitlement.userId,
+      // Plus de session anonyme : toute génération appartient à un compte.
+      // La colonne reste en base pour l'historique déjà écrit.
+      anon_session_id: null,
       watermarked: input.entitlement.watermarked,
     })
     .select('id')
@@ -174,21 +175,20 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   // ── Droit à générer ──────────────────────────────────────────────────────
+  // Il n'y a plus de génération gratuite : un compte ET un crédit sont requis.
   const user = await currentUser();
-  const entitlementResult = await resolveEntitlement({
-    headers: request.headers,
-    userId: user?.id ?? null,
-  });
+  const entitlementResult = await resolveEntitlement({ userId: user?.id ?? null });
 
   if (!entitlementResult.granted) {
-    const code: GenerateErrorCode =
-      entitlementResult.reason === 'no_credits' ? 'no_credits' : 'no_credits';
+    // 401 quand il manque un compte, 402 quand il manque un crédit : le client
+    // doit pouvoir distinguer « connecte-toi » de « achète » sans deviner.
+    const anonymous = entitlementResult.reason === 'anonymous';
     return jsonError(
-      code,
-      entitlementResult.reason === 'free_already_used'
-        ? 'Ta première photo était offerte. Prends un pack pour continuer.'
-        : 'Tu n’as plus de crédits.',
-      402,
+      anonymous ? 'auth_required' : 'no_credits',
+      anonymous
+        ? 'Crée ton compte pour générer ta photo.'
+        : 'Il te faut un crédit pour générer cette photo.',
+      anonymous ? 401 : 402,
     );
   }
 
@@ -284,8 +284,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           height: finalized.height,
           generationId: generationId ?? 'local',
           watermarked: entitlement.watermarked,
-          creditsLeft: entitlement.kind === 'credit' ? entitlement.creditsLeft : null,
-          freeUsed: entitlement.kind === 'free',
+          creditsLeft: entitlement.creditsLeft,
         });
       } catch (cause) {
         if (cause instanceof EngineError) {

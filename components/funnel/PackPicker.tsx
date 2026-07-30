@@ -13,7 +13,14 @@ import { cn, formatPrice } from '@/lib/utils';
  * d'inscription, pas de mot de passe, pas de détour. Le compte est créé par le
  * webhook après paiement, et le lien de connexion arrive par e-mail.
  */
-export function PackPicker({ knownEmail }: { knownEmail: string | null }) {
+export function PackPicker({
+  knownEmail,
+  next,
+}: {
+  knownEmail: string | null;
+  /** Page vers laquelle revenir après paiement (le prank en cours). */
+  next?: string;
+}) {
   const [selected, setSelected] = useState<CreditPack>(
     PACKS.find((pack) => pack.highlight) ?? PACKS[0],
   );
@@ -35,6 +42,7 @@ export function PackPicker({ knownEmail }: { knownEmail: string | null }) {
         body: JSON.stringify({
           packId: selected.id,
           ...(needsEmail ? { email: email.trim() } : {}),
+          ...(next ? { next } : {}),
         }),
       });
 

@@ -1,9 +1,18 @@
 'use client';
 
 import imageCompression from 'browser-image-compression';
-import { AlertTriangle, Camera, ImageUp, RotateCcw } from 'lucide-react';
+import { AlertTriangle, Camera, ImageUp, Lock, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  clearPendingPhoto,
+  dataUrlToFile,
+  fileToDataUrl,
+  loadPendingPhoto,
+  savePendingPhoto,
+} from '@/lib/pending-photo';
+import { ENTRY_PACK } from '@/lib/packs';
+import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   CLIENT_TIMEOUT_MS,
@@ -40,7 +49,15 @@ const COMPRESSION_OPTIONS = {
   fileType: 'image/jpeg',
 } as const;
 
-export function PrankFlow({ template }: { template: PrankTemplate }) {
+export function PrankFlow({
+  template,
+  isSignedIn,
+  credits,
+}: {
+  template: PrankTemplate;
+  isSignedIn: boolean;
+  credits: number;
+}) {
   const [phase, setPhase] = useState<Phase>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -53,12 +70,35 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
   const [result, setResult] = useState<{
     blob: Blob;
     watermarked: boolean;
-    creditsLeft: number | null;
+    creditsLeft: number;
   } | null>(null);
   const [error, setError] = useState<ErrorState | null>(null);
+  const [restored, setRestored] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * Restaure la photo choisie avant un détour par la connexion ou le paiement.
+   * Sans ça, l'utilisateur devrait tout recommencer juste après avoir payé —
+   * le pire moment pour lui imposer une friction.
+   */
+  useEffect(() => {
+    const pending = loadPendingPhoto(template.id);
+    if (!pending) return;
+
+    try {
+      const file = dataUrlToFile(pending.dataUrl);
+      setFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setOverlayInputs(pending.overlayInputs);
+      setRestored(true);
+      clearPendingPhoto();
+    } catch {
+      clearPendingPhoto();
+    }
+    // On ne dépend que du template : la restauration est un effet de montage.
+  }, [template.id]);
 
   /** Champs personnalisables (chèque, magazine). Dérivés du template, côté client. */
   const editableSlots = useMemo(
@@ -93,8 +133,36 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
     }
   }, []);
 
+  /**
+   * Met la photo de côté et envoie l'utilisateur là où il doit aller.
+   * Utilisé pour les deux détours du tunnel : créer un compte, puis payer.
+   */
+  const detour = useCallback(
+    async (destination: string): Promise<void> => {
+      if (file) {
+        const dataUrl = await fileToDataUrl(file).catch(() => null);
+        if (dataUrl) savePendingPhoto({ templateId: template.id, dataUrl, overlayInputs });
+      }
+      const next = encodeURIComponent(`/creer/${template.id}`);
+      window.location.href = `${destination}?next=${next}`;
+    },
+    [file, overlayInputs, template.id],
+  );
+
   const generate = useCallback(async (): Promise<void> => {
     if (!file || !consent) return;
+
+    // Les deux verrous du nouveau tunnel, vérifiés AVANT d'appeler le serveur :
+    // inutile de faire un aller-retour réseau pour apprendre ce qu'on sait déjà.
+    // Le serveur revérifie de son côté — ceci n'est qu'un raccourci d'interface.
+    if (!isSignedIn) {
+      void detour('/compte');
+      return;
+    }
+    if (credits <= 0) {
+      void detour('/credits');
+      return;
+    }
 
     setPhase('generating');
     setStage(null);
@@ -184,7 +252,7 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
     } finally {
       clearTimeout(timeout);
     }
-  }, [file, consent, overlayInputs, template.id]);
+  }, [file, consent, overlayInputs, template.id, isSignedIn, credits, detour]);
 
   const restart = useCallback((): void => {
     setPhase('upload');
@@ -228,6 +296,7 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
   // ── Échec ────────────────────────────────────────────────────────────────
   if (phase === 'error' && error) {
     const needsCredits = error.code === 'no_credits';
+    const needsAccount = error.code === 'auth_required';
 
     return (
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
@@ -236,20 +305,28 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
         </div>
 
         <h2 className="mt-4 text-2xl font-extrabold leading-tight tracking-tight">
-          {needsCredits ? 'Ta photo offerte est déjà passée' : 'Ça n’a pas marché'}
+          {needsAccount
+            ? 'Il te faut un compte'
+            : needsCredits
+              ? 'Il te faut un crédit'
+              : 'Ça n’a pas marché'}
         </h2>
         <p className="mt-2 max-w-sm text-base leading-snug text-muted" role="alert">
           {error.messageFr}
         </p>
 
-        {error.refunded && !needsCredits ? (
+        {error.refunded && !needsCredits && !needsAccount ? (
           <p className="mt-2 text-sm text-success">Aucun crédit débité.</p>
         ) : null}
 
         <div className="mt-6 w-full max-w-sm space-y-2">
-          {needsCredits ? (
-            <Button asChild block size="lg">
-              <Link href="/credits">Voir les packs</Link>
+          {needsAccount ? (
+            <Button block size="lg" onClick={() => void detour('/compte')}>
+              Créer mon compte
+            </Button>
+          ) : needsCredits ? (
+            <Button block size="lg" onClick={() => void detour('/credits')}>
+              Voir les tarifs
             </Button>
           ) : (
             <Button block size="lg" onClick={restart}>
@@ -343,6 +420,10 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
           <p className="mt-3 text-center text-sm text-muted" role="status">
             Préparation de la photo…
           </p>
+        ) : restored ? (
+          <p className="mt-3 text-center text-sm text-success" role="status">
+            On a gardé ta photo. Tu peux générer.
+          </p>
         ) : null}
 
         {/* Personnalisation du texte incrusté (chèque, magazine) */}
@@ -384,6 +465,9 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
       </div>
 
       <div className="mx-auto mt-5 w-full max-w-sm">
+        {/* Le libellé annonce ce qui va réellement se passer au tap. Écrire
+            « Générer » puis envoyer vers un paiement serait une mauvaise
+            surprise au pire endroit du tunnel. */}
         <Button
           block
           size="xl"
@@ -391,13 +475,35 @@ export function PrankFlow({ template }: { template: PrankTemplate }) {
           onClick={() => void generate()}
           className="text-xl"
         >
-          {template.emoji} Générer
+          {!isSignedIn ? (
+            <>
+              <Lock className="size-5" aria-hidden />
+              Créer mon compte
+            </>
+          ) : credits <= 0 ? (
+            <>Payer {formatPrice(ENTRY_PACK.priceEuros)} et générer</>
+          ) : (
+            <>{template.emoji} Générer</>
+          )}
         </Button>
+
         {file && !consent ? (
           <p className="mt-2 text-center text-xs text-muted">
             Coche la case pour continuer
           </p>
-        ) : null}
+        ) : !isSignedIn ? (
+          <p className="mt-2 text-center text-xs text-muted">
+            Sans mot de passe. On garde ta photo pendant l’inscription.
+          </p>
+        ) : credits <= 0 ? (
+          <p className="mt-2 text-center text-xs text-muted">
+            Paiement unique. Ta photo est conservée pendant la transaction.
+          </p>
+        ) : (
+          <p className="mt-2 text-center text-xs text-muted">
+            {credits} {credits > 1 ? 'crédits restants' : 'crédit restant'}
+          </p>
+        )}
       </div>
     </div>
   );

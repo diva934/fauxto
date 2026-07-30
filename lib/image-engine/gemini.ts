@@ -19,8 +19,23 @@ const PROVIDER = 'google';
  * permet de corriger à chaud, et de comparer deux modèles en production sans
  * toucher au code.
  */
+/**
+ * Modèle par défaut : la variante Lite.
+ *
+ * Mesuré le 30/07/2026 sur la même photo source et les mêmes prompts :
+ *
+ *   gemini-3.1-flash-image        médiane 21,4 s · pire cas 23,8 s · 2 échecs/10
+ *   gemini-3.1-flash-lite-image   médiane  3,6 s · pire cas 11,2 s · 0 échec/3
+ *
+ * Soit environ 6× plus rapide, et moins cher par génération. Surtout, c'est le
+ * seul des deux qui tient la promesse affichée sur le site (« dix secondes ») :
+ * avec le modèle standard, la page annonçait dix secondes et en mettait vingt.
+ *
+ * Réversible sans redéploiement via `GEMINI_IMAGE_MODEL` si la qualité déçoit
+ * à l'usage.
+ */
 export const DEFAULT_MODEL =
-  process.env.GEMINI_IMAGE_MODEL?.trim() || 'gemini-3.1-flash-image';
+  process.env.GEMINI_IMAGE_MODEL?.trim() || 'gemini-3.1-flash-lite-image';
 /** Modèle Pro : réservé aux templates qui exigent un rendu de mise en page fin. */
 export const PRO_MODEL =
   process.env.GEMINI_IMAGE_PRO_MODEL?.trim() || 'gemini-3-pro-image';

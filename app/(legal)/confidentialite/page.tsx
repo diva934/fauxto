@@ -110,7 +110,7 @@ export default function ConfidentialitePage() {
             <td>
               Empreinte technique (condensé salé de l’adresse IP et du navigateur)
             </td>
-            <td>Limiter les abus et compter la génération offerte</td>
+            <td>Limiter les abus (débit de requêtes)</td>
             <td>Intérêt légitime (art. 6.1.f)</td>
             <td>12 mois</td>
           </tr>

@@ -95,8 +95,7 @@ export default function MentionsLegalesPage() {
       </ul>
       <p>
         Ces marquages ne sont retirés dans aucune circonstance, y compris pour les
-        utilisateurs ayant acheté des crédits. Seul le filigrane commercial
-        portant le nom de domaine est retiré à l’achat.
+        utilisateurs ayant acheté des crédits.
       </p>
 
       <h2>4. Propriété intellectuelle</h2>

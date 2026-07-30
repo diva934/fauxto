@@ -49,12 +49,15 @@ export type GenerateEvent =
       width: number;
       height: number;
       generationId: string;
-      /** Vrai si le filigrane commercial est présent (palier gratuit). */
+      /**
+       * Filigrane commercial. Toujours `false` depuis la suppression du palier
+       * gratuit : plus rien n'est offert, donc plus rien n'est filigrané.
+       * Le champ est conservé pour ne pas casser le protocole si un palier
+       * filigrané revenait un jour.
+       */
       watermarked: boolean;
-      /** Crédits restants, `null` pour une session anonyme. */
-      creditsLeft: number | null;
-      /** Vrai si la génération gratuite vient d'être consommée. */
-      freeUsed: boolean;
+      /** Crédits restants après cette génération. */
+      creditsLeft: number;
     }
   | {
       type: 'error';
@@ -65,6 +68,8 @@ export type GenerateEvent =
     };
 
 export type GenerateErrorCode =
+  /** Aucun compte connecté — il faut s'inscrire avant de pouvoir payer. */
+  | 'auth_required'
   | 'no_credits'
   | 'moderation_refused'
   | 'invalid_input'

@@ -32,7 +32,7 @@ export default function CreerPage() {
           Tu piéges qui, et comment ?
         </h1>
         <p className="mt-2 text-base text-muted">
-          Choisis un prank, puis envoie la photo. La première est offerte.
+          Choisis un prank, envoie la photo, paie 1 €. C’est tout.
         </p>
       </header>
 

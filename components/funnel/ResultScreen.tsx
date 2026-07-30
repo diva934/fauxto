@@ -33,7 +33,7 @@ export function ResultScreen({
   templateName: string;
   templateId: string;
   watermarked: boolean;
-  creditsLeft: number | null;
+  creditsLeft: number;
   onRestart: () => void;
 }) {
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
@@ -64,7 +64,6 @@ export function ResultScreen({
 
       <p className="mt-3 text-center text-xs text-muted">
         La mention «&nbsp;Image générée par IA&nbsp;» est incrustée dans l’image.
-        {watermarked ? ' Le filigrane disparaît avec un pack.' : ''}
       </p>
 
       {/* 2. Partage — un seul tap. */}
@@ -79,30 +78,30 @@ export function ResultScreen({
         </Button>
       </div>
 
-      {creditsLeft !== null ? (
-        <p className="mt-2 text-center text-sm text-muted">
-          {creditsLeft > 0 ? (
-            <>
-              Il te reste{' '}
-              <span className="font-semibold text-text">
-                {creditsLeft} {creditsLeft > 1 ? 'pranks' : 'prank'}
-              </span>
-            </>
-          ) : (
-            <Link href="/credits" className="underline hover:text-text">
-              Tu n’as plus de crédits — recharger
-            </Link>
-          )}
-        </p>
-      ) : null}
+      <p className="mt-2 text-center text-sm text-muted">
+        {creditsLeft > 0 ? (
+          <>
+            Il te reste{' '}
+            <span className="font-semibold text-text">
+              {creditsLeft} {creditsLeft > 1 ? 'pranks' : 'prank'}
+            </span>
+          </>
+        ) : (
+          <Link href="/credits" className="underline hover:text-text">
+            Plus de crédits — en reprendre
+          </Link>
+        )}
+      </p>
 
-      {watermarked ? (
+      {/* Relance vers les lots : c'est le moment où l'utilisateur vient de voir
+          le résultat, donc le seul où l'argument du prix unitaire porte. */}
+      {creditsLeft === 0 ? (
         <Link
           href="/credits"
           className="mt-3 block rounded-card border border-line bg-surface p-3 text-center text-sm text-muted hover:border-accent/40"
         >
-          Enlever le filigrane —{' '}
-          <span className="font-semibold text-accent">à partir de 2,99 €</span>
+          15 pranks pour 8,99 € —{' '}
+          <span className="font-semibold text-accent-strong">0,60 € l’unité</span>
         </Link>
       ) : null}
 

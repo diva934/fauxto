@@ -61,12 +61,25 @@ const ITEMS = [
     ),
   },
   {
+    q: 'Combien ça coûte ?',
+    a: (
+      <>
+        <strong>1 € la photo à l’unité.</strong> Ensuite c’est dégressif :
+        5 pranks à 3,99 €, 15 à 8,99 € (0,60 € l’unité), 40 à 19,99 €
+        (0,50 € l’unité). Tu paies juste avant de générer, une fois ta photo
+        choisie — et elle est conservée pendant la transaction, tu ne
+        recommences rien.
+      </>
+    ),
+  },
+  {
     q: 'Faut-il créer un compte ?',
     a: (
       <>
-        Pas pour la première image. Tu arrives, tu choisis, tu envoies ta photo,
-        tu récupères le résultat. Le compte n’apparaît qu’au moment où tu achètes
-        des crédits — et il se crée avec ton e-mail, sans mot de passe.
+        Oui. Il se crée avec ton e-mail, sans mot de passe : tu reçois un lien,
+        tu cliques, c’est fait. Le compte sert à conserver tes crédits d’un
+        appareil à l’autre — sans lui, tes crédits seraient perdus dès que tu
+        changes de téléphone.
       </>
     ),
   },
@@ -74,11 +87,10 @@ const ITEMS = [
     q: 'C’est un abonnement ?',
     a: (
       <>
-        Non, et ça ne le deviendra pas. Ce sont des packs de crédits en paiement
-        unique, à partir de 2,99&nbsp;€. Aucun prélèvement récurrent, aucune
-        reconduction. Les crédits <strong>n’expirent jamais</strong> : personne
-        ne piège ses potes chaque semaine, ce serait absurde de te faire payer un
-        mois vide.
+        Non, et ça ne le deviendra pas. Ce sont des crédits en paiement unique.
+        Aucun prélèvement récurrent, aucune reconduction. Les crédits{' '}
+        <strong>n’expirent jamais</strong> : personne ne piège ses potes chaque
+        semaine, ce serait absurde de te faire payer un mois vide.
       </>
     ),
   },

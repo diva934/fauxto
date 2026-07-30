@@ -16,11 +16,22 @@ export const dynamic = 'force-dynamic';
 
 const ALLOWED_DESTINATIONS = new Set(['/creer', '/compte', '/credits', '/']);
 
+/**
+ * Autorise en plus le retour vers un prank précis (`/creer/<id>`), sans quoi
+ * l'utilisateur qui s'inscrit depuis un template atterrirait sur son compte et
+ * devrait refaire tout le parcours. Le `<id>` est contraint à un slug simple :
+ * c'est ce qui empêche `/creer/../../autre-site` ou une URL absolue de passer.
+ */
+function isAllowed(destination: string): boolean {
+  if (ALLOWED_DESTINATIONS.has(destination)) return true;
+  return /^\/creer\/[a-z0-9-]{1,60}$/.test(destination);
+}
+
 export async function GET(request: NextRequest): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const requested = searchParams.get('next') ?? '/compte';
-  const destination = ALLOWED_DESTINATIONS.has(requested) ? requested : '/compte';
+  const destination = isAllowed(requested) ? requested : '/compte';
 
   if (!code) {
     redirect('/compte?erreur=lien-invalide');

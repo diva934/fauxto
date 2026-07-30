@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
  * Aucun mot de passe, et aucune inscription possible depuis ici : le compte se
  * crée uniquement à l'achat (§3.6).
  */
-export function SignInForm() {
+export function SignInForm({ next }: { next?: string }) {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export function SignInForm() {
       const response = await fetch('/api/auth/magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), ...(next ? { next } : {}) }),
       });
       const payload = (await response.json()) as {
         ok?: boolean;
@@ -93,9 +93,8 @@ export function SignInForm() {
       </Button>
 
       <p className="text-xs leading-relaxed text-muted">
-        Pas de mot de passe à retenir. Si tu n’as jamais acheté de crédits, tu
-        n’as pas encore de compte — et tu n’en as pas besoin pour ta photo
-        offerte.
+        Pas de mot de passe à retenir. Si tu n’as pas encore de compte, il se
+        crée tout seul avec ce lien.
       </p>
     </div>
   );

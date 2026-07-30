@@ -10,118 +10,82 @@ import { optionalServiceClient, warnNoSupabaseOnce } from '@/lib/supabase/servic
  * jamais le pouvoir de décider.
  */
 
-export type Entitlement =
-  | {
-      kind: 'credit';
-      userId: string;
-      /** Le crédit est déjà réservé en base à ce stade. */
-      watermarked: false;
-      creditsLeft: number;
-    }
-  | {
-      kind: 'free';
-      anonSessionId: string | null;
-      watermarked: true;
-      creditsLeft: null;
-    };
+/**
+ * Droit à générer.
+ *
+ * Il n'existe plus qu'un seul cas : un compte avec un crédit réservé. La
+ * génération gratuite anonyme a été supprimée — chaque image est payée, à
+ * partir de 1 € l'unité.
+ *
+ * Conséquence à connaître : le filigrane commercial (le nom de domaine incrusté
+ * en diagonale) était réservé au palier gratuit. Plus de palier gratuit, donc
+ * plus de filigrane nulle part. Le produit perd au passage un levier de
+ * croissance : chaque image partagée ne porte plus l'adresse du site.
+ * La mention légale « Image générée par IA », elle, reste sur TOUTES les
+ * images — c'est une obligation, pas une option commerciale.
+ */
+export type Entitlement = {
+  kind: 'credit';
+  userId: string;
+  /** Le crédit est déjà réservé en base à ce stade. */
+  watermarked: false;
+  creditsLeft: number;
+};
 
 export type EntitlementResult =
   | { granted: true; entitlement: Entitlement }
   | {
       granted: false;
-      reason: 'no_credits' | 'free_already_used';
-      /** Crédits restants, pour afficher le bon écran de paywall. */
+      /** `anonymous` : pas de compte. `no_credits` : compte sans solde. */
+      reason: 'anonymous' | 'no_credits';
       creditsLeft: number;
     };
 
-/**
- * Repli en mémoire quand Supabase n'est pas configuré.
- *
- * Volontairement limité : ça permet de développer le parcours sans base, mais
- * le compteur disparaît au redémarrage. C'est signalé par un avertissement, et
- * le README le dit explicitement — ce n'est pas un mode de production.
- */
-const inMemoryFreeUsed = new Set<string>();
-
 export async function resolveEntitlement(input: {
-  headers: Headers;
   userId: string | null;
 }): Promise<EntitlementResult> {
+  // Aucun compte : plus aucune génération possible. C'est le changement de
+  // modèle — il n'y a plus de palier gratuit à offrir à un visiteur anonyme.
+  if (!input.userId) {
+    return { granted: false, reason: 'anonymous', creditsLeft: 0 };
+  }
+
   const supabase = optionalServiceClient();
-
-  // ── Utilisateur connecté : on tente de réserver un crédit ────────────────
-  if (input.userId && supabase) {
-    const { data: reserved, error } = await supabase.rpc('reserve_credit', {
-      p_user_id: input.userId,
-    });
-
-    if (error) {
-      console.error('[credits] reserve_credit a échoué :', error.message);
-      return { granted: false, reason: 'no_credits', creditsLeft: 0 };
-    }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('credits')
-      .eq('id', input.userId)
-      .single();
-
-    const creditsLeft = profile?.credits ?? 0;
-
-    if (!reserved) {
-      // Solde à zéro : on ne retombe PAS sur la génération gratuite. Un compte
-      // existant a déjà consommé sa gratuité par construction.
-      return { granted: false, reason: 'no_credits', creditsLeft };
-    }
-
-    return {
-      granted: true,
-      entitlement: {
-        kind: 'credit',
-        userId: input.userId,
-        watermarked: false,
-        creditsLeft,
-      },
-    };
-  }
-
-  // ── Visiteur anonyme : une seule génération, gratuite et filigranée ──────
-  const fingerprint = computeFingerprint(input.headers);
-
   if (!supabase) {
-    warnNoSupabaseOnce('le suivi des générations gratuites');
-    if (inMemoryFreeUsed.has(fingerprint)) {
-      return { granted: false, reason: 'free_already_used', creditsLeft: 0 };
-    }
-    inMemoryFreeUsed.add(fingerprint);
-    return {
-      granted: true,
-      entitlement: { kind: 'free', anonSessionId: null, watermarked: true, creditsLeft: null },
-    };
+    // Sans base, on ne PEUT PAS savoir si l'utilisateur a payé. Refuser est la
+    // seule réponse correcte : l'alternative ouvrirait la génération à tous.
+    warnNoSupabaseOnce('la vérification des crédits');
+    return { granted: false, reason: 'no_credits', creditsLeft: 0 };
   }
 
-  const { data, error } = await supabase.rpc('claim_free_generation', {
-    p_fingerprint: fingerprint,
+  const { data: reserved, error } = await supabase.rpc('reserve_credit', {
+    p_user_id: input.userId,
   });
 
   if (error) {
-    console.error('[credits] claim_free_generation a échoué :', error.message);
-    // Fail-closed : on préfère refuser que d'ouvrir un accès illimité.
-    return { granted: false, reason: 'free_already_used', creditsLeft: 0 };
+    console.error('[credits] reserve_credit a échoué :', error.message);
+    return { granted: false, reason: 'no_credits', creditsLeft: 0 };
   }
 
-  const row = Array.isArray(data) ? data[0] : null;
-  if (!row?.granted) {
-    return { granted: false, reason: 'free_already_used', creditsLeft: 0 };
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('credits')
+    .eq('id', input.userId)
+    .single();
+
+  const creditsLeft = profile?.credits ?? 0;
+
+  if (!reserved) {
+    return { granted: false, reason: 'no_credits', creditsLeft };
   }
 
   return {
     granted: true,
     entitlement: {
-      kind: 'free',
-      anonSessionId: row.session_id,
-      watermarked: true,
-      creditsLeft: null,
+      kind: 'credit',
+      userId: input.userId,
+      watermarked: false,
+      creditsLeft,
     },
   };
 }
@@ -131,8 +95,6 @@ export async function confirmUsage(
   entitlement: Entitlement,
   generationId: string,
 ): Promise<void> {
-  if (entitlement.kind !== 'credit') return;
-
   const supabase = optionalServiceClient();
   if (!supabase) return;
 
@@ -149,38 +111,25 @@ export async function confirmUsage(
 }
 
 /**
- * Rend ce qui avait été réservé quand la génération échoue.
- * L'utilisateur ne doit jamais payer un échec — ni en crédit, ni en gratuité.
+ * Rend le crédit réservé quand la génération échoue.
+ *
+ * Point critique maintenant que TOUT est payant : un échec non remboursé, c'est
+ * de l'argent encaissé sans contrepartie. Cette fonction doit être appelée sur
+ * chaque chemin d'erreur, sans exception.
  */
 export async function refundUsage(
   entitlement: Entitlement,
   generationId: string | null,
 ): Promise<void> {
   const supabase = optionalServiceClient();
+  if (!supabase) return;
 
-  if (entitlement.kind === 'credit') {
-    if (!supabase) return;
-    const { error } = await supabase.rpc('refund_credit', {
-      p_user_id: entitlement.userId,
-      p_generation_id: generationId,
-      p_reason: 'refund_failed_generation',
-    });
-    if (error) console.error('[credits] refund_credit a échoué :', error.message);
-    return;
-  }
-
-  // Session anonyme : on rouvre la gratuité.
-  if (!supabase) {
-    // Rien à faire de fiable en mémoire : on ne connaît pas l'empreinte ici.
-    // Le repli en mémoire n'est de toute façon pas un mode de production.
-    return;
-  }
-  if (!entitlement.anonSessionId) return;
-
-  const { error } = await supabase.rpc('release_free_generation', {
-    p_session_id: entitlement.anonSessionId,
+  const { error } = await supabase.rpc('refund_credit', {
+    p_user_id: entitlement.userId,
+    p_generation_id: generationId,
+    p_reason: 'refund_failed_generation',
   });
-  if (error) console.error('[credits] release_free_generation a échoué :', error.message);
+  if (error) console.error('[credits] refund_credit a échoué :', error.message);
 }
 
 /** Solde courant, pour l'affichage. */

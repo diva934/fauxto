@@ -1,4 +1,4 @@
-import { Camera, Send, Sparkles, Wand2 } from 'lucide-react';
+import { Camera, CreditCard, Send, Sparkles, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -25,6 +25,12 @@ const STEPS = [
     titleFr: 'Envoie la photo',
     bodyFr:
       'Depuis ta galerie ou en la prenant sur le moment. Plus elle est nette, meilleur c’est.',
+  },
+  {
+    icon: CreditCard,
+    titleFr: 'Paie ta photo',
+    bodyFr:
+      '1 € l’unité, moins cher par lot. Ta photo est gardée pendant le paiement, tu ne recommences rien.',
   },
   {
     icon: Sparkles,
@@ -79,7 +85,7 @@ export function HowItWorks() {
         <Link href="/creer">Piéger un pote</Link>
       </Button>
       <p className="mt-2 text-center text-xs text-muted">
-        La première est offerte, sans créer de compte
+        1 € la photo, moins cher par lot
       </p>
     </section>
   );

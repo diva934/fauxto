@@ -7,23 +7,28 @@ import { serverSupabase } from '@/lib/supabase/server';
 export const runtime = 'nodejs';
 
 /**
- * Envoie un lien de connexion.
+ * Envoie un lien de connexion — et crée le compte s'il n'existe pas encore.
  *
- * `shouldCreateUser: false` est volontaire : un compte ne se crée qu'au moment
- * d'un paiement (§3.6). Ce point d'entrée sert uniquement aux acheteurs qui
- * reviennent, pas à s'inscrire.
+ * `shouldCreateUser: true` depuis le passage au modèle « tout payant ». Avant,
+ * un compte ne naissait qu'au moment d'un paiement, et ce point d'entrée ne
+ * servait qu'aux acheteurs qui revenaient. Le tunnel est désormais l'inverse :
+ * on crée son compte AVANT de choisir un prank, donc l'inscription doit passer
+ * par ici. Avec `false`, plus personne ne pouvait entrer dans le produit.
  *
- * La réponse est TOUJOURS identique, que l'adresse existe ou non. Renvoyer une
- * erreur « compte inconnu » transformerait ce formulaire en oracle permettant
- * de tester si une adresse donnée est cliente du service.
+ * La réponse reste TOUJOURS identique, que l'adresse existe ou non — sinon le
+ * formulaire deviendrait un oracle permettant de tester si une adresse donnée
+ * est cliente du service.
  */
 
-const bodySchema = z.object({ email: z.string().email().max(200) });
+const bodySchema = z.object({
+  email: z.string().email().max(200),
+  /** Destination après connexion. Validée côté callback, jamais ici. */
+  next: z.string().max(200).optional(),
+});
 
 const GENERIC_RESPONSE = {
   ok: true,
-  message:
-    'Si un compte existe avec cette adresse, le lien de connexion vient de partir.',
+  message: 'Ton lien de connexion vient de partir. Regarde tes e-mails.',
 } as const;
 
 export async function POST(request: Request): Promise<Response> {
@@ -55,12 +60,15 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
+    // La destination n'est pas validée ici : le callback la confronte à sa
+    // liste blanche. Ce point d'entrée ne doit rien décider sur la redirection.
+    const next = parsed.next ?? '/compte';
     const supabase = await serverSupabase();
     const { error } = await supabase.auth.signInWithOtp({
       email: parsed.email.trim().toLowerCase(),
       options: {
-        shouldCreateUser: false,
-        emailRedirectTo: `${serverEnv.siteUrl}/auth/callback?next=/compte`,
+        shouldCreateUser: true,
+        emailRedirectTo: `${serverEnv.siteUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
     // On journalise sans le remonter au client, pour ne pas révéler l'existence

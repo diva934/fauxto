@@ -67,16 +67,17 @@ export default function CgvPage() {
         l’argent.
       </p>
 
-      <h2>5. Première génération offerte</h2>
+      <h2>5. Aucune génération gratuite</h2>
       <p>
-        Une génération est offerte, sans création de compte. L’image produite porte
-        un filigrane comportant le nom de domaine. Ce filigrane commercial n’est
-        plus appliqué sur les images générées avec des crédits achetés.
+        Toute génération d’image est payante, à partir d’un crédit valant
+        1,00&nbsp;€. Il n’existe ni essai gratuit, ni quota offert. La création
+        d’un compte est nécessaire avant tout achat, et le paiement intervient
+        après le choix de la photo, juste avant la génération.
       </p>
       <p>
-        En revanche, la mention légale «&nbsp;Image générée par IA&nbsp;» et les
-        métadonnées de provenance sont présentes sur{' '}
-        <strong>toutes les images sans exception</strong>, y compris payantes :
+        Aucune image ne porte de filigrane commercial. En revanche, la mention
+        légale «&nbsp;Image générée par IA&nbsp;» et les métadonnées de provenance
+        sont présentes sur <strong>toutes les images sans exception</strong> :
         elles répondent à une obligation réglementaire et ne constituent pas une
         option commerciale.
       </p>
