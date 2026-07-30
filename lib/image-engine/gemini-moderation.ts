@@ -9,12 +9,20 @@ const PROVIDER = 'google';
 /**
  * Modèle de vision pour l'analyse de l'image source.
  *
- * ⚠️ Identifiant à VÉRIFIER contre l'API avant mise en production — il est
- * surchargeable par `GEMINI_MODERATION_MODEL` précisément pour qu'une
- * correction ne demande pas de redéploiement de code.
+ * Vérifié le 30/07/2026 contre le catalogue officiel
+ * (https://ai.google.dev/gemini-api/docs/models) : `gemini-3.1-flash` — la
+ * valeur issue du cahier des charges — N'EXISTE PAS. La famille 3.1 ne propose
+ * que `gemini-3.1-flash-lite`, `-flash-image`, `-flash-lite-image`,
+ * `-flash-live-preview` et `-flash-tts-preview`.
+ *
+ * Comme la modération est fail-closed, un identifiant introuvable faisait
+ * refuser 100 % des générations sans indice sur la cause. Le défaut est donc
+ * `gemini-3.6-flash` (stable, multimodal), toujours surchargeable par
+ * `GEMINI_MODERATION_MODEL` sans redéploiement — p. ex. `gemini-3.5-flash-lite`
+ * (5× moins cher en entrée) une fois le taux de faux refus mesuré.
  */
 const DEFAULT_MODERATION_MODEL =
-  process.env.GEMINI_MODERATION_MODEL?.trim() || 'gemini-3.1-flash';
+  process.env.GEMINI_MODERATION_MODEL?.trim() || 'gemini-3.6-flash';
 
 /** La modération doit être rapide : elle s'ajoute au temps d'attente perçu. */
 const MODERATION_TIMEOUT_MS = 10_000;
@@ -84,6 +92,15 @@ export class GeminiModerationEngine implements ModerationEngine {
           },
         ],
         config: {
+          // `temperature` (ainsi que top_p / top_k) est déprécié depuis
+          // Gemini 3.6 Flash : l'API l'IGNORE aujourd'hui et renverra une 400
+          // sur les prochaines générations de modèles. Il donnait donc une
+          // fausse impression de déterminisme sur une décision qui a des
+          // conséquences juridiques. Le déterminisme passe désormais par une
+          // system instruction explicite.
+          // cf. https://ai.google.dev/gemini-api/docs/latest-model
+          systemInstruction:
+            'You are a deterministic classifier. For identical input you must always produce identical output. Report only directly observable facts, never inferences or speculation. When the image is ambiguous, unclear, blurry or partially visible, lower the confidence field rather than guessing.',
           // Sortie structurée : on ne parse pas du texte libre pour une
           // décision qui a des conséquences juridiques.
           responseMimeType: 'application/json',
@@ -113,7 +130,6 @@ export class GeminiModerationEngine implements ModerationEngine {
               'notes',
             ],
           },
-          temperature: 0,
           abortSignal: abortController.signal,
           httpOptions: { timeout: MODERATION_TIMEOUT_MS },
         },
