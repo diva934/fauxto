@@ -30,8 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — tout est ignoré par défaut, y compris .env.local
 .env*
+# ...sauf le gabarit documenté, qui DOIT être versionné : sans lui, personne ne
+# sait quelles variables renseigner. Il ne contient aucune valeur, que des clés.
+!.env.example
 
 # vercel
 .vercel

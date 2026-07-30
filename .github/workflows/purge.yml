@@ -1,0 +1,67 @@
+# Purge RGPD horaire des images de plus de 24 h.
+#
+# Pourquoi ce fichier existe : le plan Vercel Hobby limite les tâches cron à UN
+# passage par jour. Or les pages /confidentialite et /cgv promettent une
+# suppression sous 24 h. Avec un passage quotidien, une image créée juste après
+# le passage attend le suivant — la conservation réelle atteint alors ~48 h, et
+# le site dit factuellement le contraire de ce qu'il fait.
+#
+# GitHub Actions permet un passage horaire gratuitement. La fenêtre réelle
+# repasse donc sous 25 h, ce qui est cohérent avec ce qui est annoncé.
+#
+# À FAIRE UNE FOIS : ajouter deux secrets dans
+#   GitHub → Settings → Secrets and variables → Actions
+#     · PURGE_URL     = https://fauxto.vercel.app/api/cron/purge
+#     · CRON_SECRET   = la même valeur que dans Vercel
+#
+# Si tu passes un jour sur Vercel Pro, tu peux supprimer ce workflow et remettre
+# "schedule": "0 * * * *" dans vercel.json.
+
+name: Purge RGPD des images
+
+on:
+  schedule:
+    # Toutes les heures. GitHub Actions n'est pas ponctuel à la minute : des
+    # retards de quelques minutes sont normaux et sans conséquence ici.
+    - cron: '17 * * * *'
+  # Permet de déclencher une purge à la demande depuis l'onglet Actions.
+  workflow_dispatch:
+
+# Deux purges simultanées ne casseraient rien (l'opération est idempotente),
+# mais c'est inutile.
+concurrency:
+  group: purge
+  cancel-in-progress: false
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Appeler l'endpoint de purge
+        env:
+          PURGE_URL: ${{ secrets.PURGE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$PURGE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::PURGE_URL ou CRON_SECRET manquant dans les secrets du dépôt."
+            exit 1
+          fi
+
+          # -s silencieux, -S affiche quand même les erreurs, -w récupère le code HTTP.
+          response=$(curl -sS -w '\n%{http_code}' \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "$PURGE_URL")
+
+          body=$(echo "$response" | sed '$d')
+          code=$(echo "$response" | tail -n1)
+
+          echo "HTTP $code"
+          echo "$body"
+
+          # On échoue bruyamment : une purge silencieusement cassée pendant des
+          # semaines est exactement le scénario à éviter sur une obligation RGPD.
+          if [ "$code" != "200" ]; then
+            echo "::error::La purge a renvoyé $code au lieu de 200."
+            exit 1
+          fi

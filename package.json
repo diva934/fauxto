@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "diagnose": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/doctor.ts",
     "test:pipeline": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/test-pipeline.ts",
     "test:templates": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/test-templates.ts",
     "icons": "tsx --conditions=react-server scripts/generate-icons.ts",
