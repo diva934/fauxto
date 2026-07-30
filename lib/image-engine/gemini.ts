@@ -11,13 +11,37 @@ import {
 
 const PROVIDER = 'google';
 
-/** Modèle par défaut : rapide et bon marché, pour 8 des 10 templates. */
-export const DEFAULT_MODEL = 'gemini-3.1-flash-image';
+/**
+ * Modèles, surchargeables sans redéploiement.
+ *
+ * Même raison que pour la modération : un identifiant de modèle est la donnée
+ * la plus volatile du système. Pouvoir en changer par variable d'environnement
+ * permet de corriger à chaud, et de comparer deux modèles en production sans
+ * toucher au code.
+ */
+export const DEFAULT_MODEL =
+  process.env.GEMINI_IMAGE_MODEL?.trim() || 'gemini-3.1-flash-image';
 /** Modèle Pro : réservé aux templates qui exigent un rendu de mise en page fin. */
-export const PRO_MODEL = 'gemini-3-pro-image';
+export const PRO_MODEL =
+  process.env.GEMINI_IMAGE_PRO_MODEL?.trim() || 'gemini-3-pro-image';
 
-/** Au-delà, on abandonne et on ne débite pas l'utilisateur (cf. §3.4 du cahier des charges). */
-const PROVIDER_TIMEOUT_MS = 25_000;
+/**
+ * Délai d'abandon côté fournisseur.
+ *
+ * Mesuré le 30/07/2026 sur les 10 templates : médiane 21,4 s, pire cas 23,8 s,
+ * et 2 générations sur 10 perdues en 504 DEADLINE_EXCEEDED. À 25 s, le plafond
+ * passait sous la latence réelle : les échecs n'étaient pas accidentels, ils
+ * étaient structurels.
+ *
+ * 45 s laisse une marge franche au-dessus du pire cas observé, tout en restant
+ * sous le `maxDuration: 60` de la fonction Vercel — au-delà, c'est la
+ * plateforme qui coupe, et l'utilisateur perd la réponse sans message clair.
+ *
+ * ⚠️ Ce délai est un filet de sécurité, PAS une promesse produit. Les textes
+ * du site annoncent dix secondes : cet écart est un problème de produit à
+ * trancher, pas un réglage à masquer ici.
+ */
+const PROVIDER_TIMEOUT_MS = 45_000;
 
 /**
  * Ratios réellement documentés par `ImageConfig` du SDK :

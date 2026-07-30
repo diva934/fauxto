@@ -73,8 +73,18 @@ export type GenerateErrorCode =
   | 'timeout'
   | 'server_error';
 
-/** Au-delà, le client abandonne et affiche l'échec (cf. §3.4). */
-export const CLIENT_TIMEOUT_MS = 25_000;
+/**
+ * Au-delà, le client abandonne et affiche l'échec.
+ *
+ * Doit rester STRICTEMENT SUPÉRIEUR au délai d'abandon côté fournisseur
+ * (45 s dans `lib/image-engine/gemini.ts`) : si le client coupe le premier,
+ * le serveur n'a pas le temps de rembourser le crédit ni de marquer la ligne
+ * en échec, et l'utilisateur est débité pour rien.
+ *
+ * Mesures du 30/07/2026 : médiane 21,4 s, pire cas 23,8 s. L'ancienne valeur
+ * de 25 s coupait donc régulièrement des générations qui allaient aboutir.
+ */
+export const CLIENT_TIMEOUT_MS = 50_000;
 
 /** Encode un événement en une ligne NDJSON. */
 export function encodeEvent(event: GenerateEvent): string {
