@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0B0B0F"/>
+  <g transform="translate(8.96 8.96)">
+    <!-- Barre verticale du F -->
+    <rect x="7.3728" y="4.608" width="7.833600000000001" height="36.864" rx="2.35008" fill="#D6FF3E"/>
+    <!-- Barre supérieure -->
+    <rect x="7.3728" y="4.608" width="25.8048" height="7.833600000000001" rx="2.35008" fill="#D6FF3E"/>
+    <!-- Barre médiane, plus courte -->
+    <rect x="7.3728" y="20.275199999999998" width="18.432" height="7.833600000000001" rx="2.35008" fill="#D6FF3E"/>
+    <!-- Déclencheur -->
+    <circle cx="35.9424" cy="35.9424" r="5.0687999999999995" fill="#D6FF3E"/>
+  </g>
+</svg>
