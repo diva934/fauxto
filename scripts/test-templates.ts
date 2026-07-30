@@ -201,8 +201,13 @@ async function main(): Promise<void> {
       );
       process.exit(2);
     }
+    // `analysis` est nullable et l'était aussi sur le chemin d'acceptation
+    // (notamment avec --skip-moderation) : l'accès direct plantait sur un
+    // TypeError avant d'avoir mesuré la moindre latence.
     console.log(
-      `acceptée (âge min. estimé : ${decision.analysis.estimatedMinAge ?? 'aucune personne'}, confiance : ${decision.analysis.confidence})\n`,
+      decision.analysis
+        ? `acceptée (âge min. estimé : ${decision.analysis.estimatedMinAge ?? 'aucune personne'}, confiance : ${decision.analysis.confidence})\n`
+        : 'acceptée (aucune analyse disponible)\n',
     );
   }
 

@@ -13,8 +13,11 @@
 
 import { DEFAULT_MODEL, PRO_MODEL } from '../lib/image-engine/gemini';
 
+// Doit rester aligné sur DEFAULT_MODERATION_MODEL de
+// lib/image-engine/gemini-moderation.ts, sinon le diagnostic valide un
+// identifiant que le code n'utilise pas.
 const MODERATION_MODEL =
-  process.env.GEMINI_MODERATION_MODEL?.trim() || 'gemini-3.1-flash';
+  process.env.GEMINI_MODERATION_MODEL?.trim() || 'gemini-3.6-flash';
 
 type Severity = 'bloquant' | 'degrade' | 'optionnel';
 
