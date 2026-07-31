@@ -85,7 +85,12 @@ async function generateSplash(
 ): Promise<Buffer> {
   // Le logo occupe 30 % de la plus petite dimension : lisible sans écraser.
   const logoSize = Math.round(Math.min(width, height) * 0.3);
-  const logo = await sharp(Buffer.from(standardSvg(logoSize))).png().toBuffer();
+  const logo = (await hasBrandMark())
+    ? await sharp(BRAND_MARK)
+        .resize({ width: logoSize, height: logoSize, fit: 'inside', kernel: 'lanczos3' })
+        .png()
+        .toBuffer()
+    : await sharp(Buffer.from(standardSvg(logoSize))).png().toBuffer();
 
   return sharp({
     create: {
@@ -100,32 +105,71 @@ async function generateSplash(
     .toBuffer();
 }
 
+/** Marque de la planche officielle, si elle a été installée. */
+const BRAND_MARK = resolve(process.cwd(), 'public/logo/marque-1024.png');
+
+/**
+ * Compose une icône à partir de la vraie marque : fond plein + marque centrée,
+ * à l'échelle demandée. `padding` est la marge en fraction du côté.
+ */
+async function iconFromMark(size: number, padding: number): Promise<Buffer> {
+  const inner = Math.round(size * (1 - padding * 2));
+  const mark = await sharp(BRAND_MARK)
+    .resize({ width: inner, height: inner, fit: 'inside', kernel: 'lanczos3' })
+    .toBuffer();
+
+  return sharp({
+    create: { width: size, height: size, channels: 4, background: INK },
+  })
+    .composite([{ input: mark, gravity: 'center' }])
+    .png()
+    .toBuffer();
+}
+
+async function hasBrandMark(): Promise<boolean> {
+  try {
+    await sharp(BRAND_MARK).metadata();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function main(): Promise<void> {
   await mkdir(ICONS_DIR, { recursive: true });
   await mkdir(SPLASH_DIR, { recursive: true });
 
-  console.log('\n🎨 Génération des icônes\n');
+  const useMark = await hasBrandMark();
+  console.log(
+    `\n🎨 Génération des icônes — ${useMark ? 'depuis la marque officielle' : 'depuis le logo de secours'}\n`,
+  );
 
-  // Favicon SVG : net à toutes les tailles, aucune génération nécessaire.
+  // Favicon SVG : net à toutes les tailles. On garde la version vectorielle de
+  // secours tant qu'on n'a pas le fichier vectoriel de la vraie marque — un SVG
+  // qui embarquerait une image matricielle n'aurait aucun de ses avantages.
   await writeFile(resolve(ICONS_DIR, 'favicon.svg'), standardSvg(64));
   console.log('  ✅ favicon.svg');
 
   for (const size of [192, 512]) {
-    const buffer = await sharp(Buffer.from(standardSvg(size))).png().toBuffer();
+    const buffer = useMark
+      ? await iconFromMark(size, 0.16)
+      : await sharp(Buffer.from(standardSvg(size))).png().toBuffer();
     await writeFile(resolve(ICONS_DIR, `${size}.png`), buffer);
     console.log(`  ✅ ${size}.png`);
   }
 
-  const maskable = await sharp(Buffer.from(maskableSvg(512))).png().toBuffer();
+  // Marge de sécurité de 22 % imposée par Android sur les icônes masquables.
+  const maskable = useMark
+    ? await iconFromMark(512, 0.24)
+    : await sharp(Buffer.from(maskableSvg(512))).png().toBuffer();
   await writeFile(resolve(ICONS_DIR, 'maskable-512.png'), maskable);
   console.log('  ✅ maskable-512.png');
 
   // apple-touch-icon : iOS n'applique pas de masque, mais arrondit lui-même.
   // Pas de transparence, sinon le fond devient noir sur certaines versions.
-  const appleTouch = await sharp(Buffer.from(standardSvg(180)))
-    .flatten({ background: INK })
-    .png()
-    .toBuffer();
+  const appleTouch = useMark
+    ? await iconFromMark(180, 0.18)
+    : await sharp(Buffer.from(standardSvg(180))).flatten({ background: INK }).png().toBuffer();
   await writeFile(resolve(ICONS_DIR, 'apple-touch-icon.png'), appleTouch);
   console.log('  ✅ apple-touch-icon.png (180×180)');
 

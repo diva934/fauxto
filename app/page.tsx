@@ -1,4 +1,5 @@
 import { Check, Infinity as InfinityIcon, ShieldCheck, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Faq } from '@/components/marketing/Faq';
 import { HowItWorks } from '@/components/marketing/HowItWorks';
@@ -34,8 +35,20 @@ export default async function HomePage() {
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col">
       {/* ── Barre haute ──────────────────────────────────────────────────── */}
       <header className="flex items-center justify-between px-5 pt-3 safe-top">
-        <span className="text-base font-extrabold tracking-tight">
-          FAUX<span className="text-accent-strong">TO</span>
+        {/* La marque est une image matricielle détourée depuis la planche de
+            marque. Elle est nette à cette taille ; pour un affichage plus grand
+            il faudra le fichier vectoriel d'origine. */}
+        <span className="flex items-center gap-2">
+          <Image
+            src="/logo/marque.png"
+            alt=""
+            aria-hidden
+            width={149}
+            height={157}
+            priority
+            className="h-6 w-auto"
+          />
+          <span className="text-base font-extrabold tracking-tight">FAUXTO</span>
         </span>
         {/* Un seul lien de navigation : les acheteurs doivent pouvoir
             retrouver leurs crédits sur un autre appareil. */}
