@@ -77,7 +77,10 @@ export const serverEnv = {
     return optional('C2PA_PRIVATE_KEY_PEM');
   },
   get reportEmail(): string {
-    return optional('REPORT_CONTACT_EMAIL') ?? 'contact@fauxto.fr';
+    // Pas de repli sur une adresse inventée : une adresse de contact qui
+    // n'existe pas est pire que pas d'adresse du tout sur une page qui promet
+    // de traiter les signalements. `<ToComplete />` rend l'absence visible.
+    return optional('REPORT_CONTACT_EMAIL') ?? optional('NEXT_PUBLIC_CONTACT_EMAIL') ?? '';
   },
 } as const;
 
