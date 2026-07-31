@@ -22,7 +22,10 @@ const buttonVariants = cva(
         sm: 'px-4 text-sm',
         md: 'px-6 text-base',
         lg: 'px-8 text-lg',
-        xl: 'h-16 px-8 text-xl',
+        // 56 px : assez présent pour un appel à l'action principal, sans le
+        // pavé que faisaient les 64 px en pleine largeur sur un écran de
+        // 390 px. Reste très au-dessus du minimum tactile de 48 px.
+        xl: 'h-14 px-8 text-lg',
       },
       block: {
         true: 'w-full',

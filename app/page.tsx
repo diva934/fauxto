@@ -49,21 +49,22 @@ export default async function HomePage() {
 
       {/* ── Héros ────────────────────────────────────────────────────────── */}
       <section className="px-5 pt-4">
+        {/* Pastille affichée UNIQUEMENT quand le compteur a de la matière.
+            Annoncer un prix ici était contre-productif : le visiteur arrive de
+            TikTok sans savoir ce qu'est le produit, et le premier élément qu'il
+            lisait parlait d'argent avant même qu'il ait compris ce qu'il
+            achèterait. Tant qu'il n'y a rien de vrai à afficher, on n'affiche
+            rien — et la grille avant/après, qui est ce qui vend, remonte
+            d'autant. */}
         {weeklyCount !== null && weeklyCount > 0 ? (
           <p className="bg-glass mx-auto flex w-fit items-center gap-1.5 rounded-pill px-3 py-1.5 text-xs">
             <Sparkles className="size-3.5 text-accent-strong" aria-hidden />
             <span className="font-bold tabular-nums">{formatCount(weeklyCount)}</span>
             <span className="text-muted">photos cette semaine</span>
           </p>
-        ) : (
-          <p className="bg-glass mx-auto flex w-fit items-center gap-1.5 rounded-pill px-3 py-1.5 text-xs">
-            <Sparkles className="size-3.5 text-accent-strong" aria-hidden />
-            <span className="font-bold">Dès 1 €</span>
-            <span className="text-muted">la photo</span>
-          </p>
-        )}
+        ) : null}
 
-        <h1 className="mt-4 text-center text-[2.6rem] font-extrabold leading-[0.98] tracking-tight text-balance">
+        <h1 className="mt-2 text-center text-[2.6rem] font-extrabold leading-[0.98] tracking-tight text-balance">
           Envoie à ton pote
           <br />
           <span className="text-accent-strong">une photo</span> qu’il va croire
@@ -74,7 +75,7 @@ export default async function HomePage() {
           envoies une photo, c’est prêt en dix secondes.
         </p>
 
-        <Button asChild size="xl" block className="glow-accent mt-6 text-lg">
+        <Button asChild size="xl" block className="glow-accent mx-auto mt-6 max-w-sm">
           <Link href="/creer">Créer ma photo</Link>
         </Button>
 
@@ -125,7 +126,7 @@ export default async function HomePage() {
             Un euro la première photo. Pas d’abonnement, pas de reconduction,
             pas de piège.
           </p>
-          <Button asChild size="xl" block className="glow-accent mt-5 text-lg">
+          <Button asChild size="xl" block className="glow-accent mx-auto mt-5 max-w-sm">
             <Link href="/creer">Créer ma photo</Link>
           </Button>
         </div>

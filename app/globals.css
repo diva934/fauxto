@@ -238,10 +238,13 @@
 
 /* Halo diffus derrière le CTA et le titre — donne de la profondeur au fond
    quasi-noir sans ajouter d'image. */
+/* Halo volontairement discret : sur un bouton en pleine largeur, un halo trop
+   large ajoute une masse visuelle qui fait paraître le bouton plus gros qu'il
+   n'est. */
 @utility glow-accent {
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-accent) 40%, transparent),
-    0 12px 40px -8px color-mix(in srgb, var(--color-accent) 55%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent),
+    0 8px 26px -10px color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 @utility bg-glass {
