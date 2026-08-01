@@ -2,13 +2,19 @@
 
 import { Loader2, Mail } from 'lucide-react';
 import { useState } from 'react';
+import { GoogleButton } from '@/components/account/GoogleButton';
 import { Button } from '@/components/ui/button';
 
 /**
- * Connexion par lien e-mail, pour les acheteurs qui reviennent.
+ * Connexion — Google d'abord, lien e-mail en second.
  *
- * Aucun mot de passe, et aucune inscription possible depuis ici : le compte se
- * crée uniquement à l'achat (§3.6).
+ * L'ordre n'est pas cosmétique. Google, c'est un tap. Le lien e-mail, c'est
+ * saisir son adresse, quitter le site, ouvrir sa boîte, trouver le message,
+ * cliquer, revenir. Sur un tunnel où l'utilisateur a déjà choisi sa photo et
+ * attend sa génération, chaque étape supplémentaire coûte des conversions.
+ *
+ * Le lien e-mail reste indispensable : tout le monde n'a pas de compte Google,
+ * et c'est le seul chemin pour qui refuse de lier ses comptes.
  */
 export function SignInForm({ next }: { next?: string }) {
   const [email, setEmail] = useState('');
@@ -57,6 +63,16 @@ export function SignInForm({ next }: { next?: string }) {
 
   return (
     <div className="space-y-3">
+      <GoogleButton next={next} />
+
+      {/* Séparateur : deux traits et un mot, plutôt qu'un simple espace. Sans
+          lui, les deux chemins se lisent comme une seule suite d'actions. */}
+      <div className="flex items-center gap-3 py-1" role="separator">
+        <span className="h-px flex-1 bg-line" />
+        <span className="text-xs text-muted">ou</span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+
       <label className="block">
         <span className="text-sm font-semibold">Ton e-mail</span>
         <input

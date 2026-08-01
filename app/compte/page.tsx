@@ -15,9 +15,14 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Ces messages couvrent DEUX chemins : le lien e-mail et la connexion Google.
+ * Ils évitent donc le mot « lien », qui n'aurait aucun sens pour quelqu'un
+ * arrivant d'un échec côté Google.
+ */
 const ERRORS: Record<string, string> = {
-  'lien-invalide': 'Ce lien est incomplet. Demande-en un nouveau.',
-  'lien-expire': 'Ce lien a expiré. Demande-en un nouveau.',
+  'lien-invalide': 'La connexion n’a pas abouti. Réessaie.',
+  'lien-expire': 'La connexion a expiré. Recommence.',
 };
 
 export default async function ComptePage({
