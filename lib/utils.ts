@@ -32,7 +32,9 @@ function siteDomain(): string {
 export const BRAND = {
   name: 'Fauxto',
   domain: siteDomain(),
-  tagline: 'Piège tes potes en une photo',
+  // Alimente le <title> par défaut de toutes les pages : doit rester aligné
+  // sur le H1 de l'accueil, sinon l'onglet et la page racontent deux choses.
+  tagline: 'Fais douter n’importe qui',
 } as const;
 
 /** Formatte un entier à la française : 12483 -> « 12 483 ». */

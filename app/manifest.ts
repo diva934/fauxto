@@ -13,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: `${BRAND.name} — ${BRAND.tagline}`,
     short_name: BRAND.name,
     description:
-      'Transforme la photo de ton pote en canular crédible avec l’IA. 1 € la photo.',
+      'Transforme n’importe quelle photo en canular crédible avec l’IA. 1 € la photo.',
     start_url: '/?source=pwa',
     scope: '/',
     display: 'standalone',

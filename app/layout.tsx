@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: `%s — ${BRAND.name}`,
   },
   description:
-    'Transforme la photo de ton pote en canular crédible avec l’IA. Voiture rayée, coupe ratée, vieilli de 40 ans. 1 € la photo, sans abonnement.',
+    'Transforme n’importe quelle photo en canular crédible avec l’IA. Voiture rayée, coupe ratée, vieilli de 40 ans. 1 € la photo, sans abonnement.',
   applicationName: BRAND.name,
   appleWebApp: {
     capable: true,
@@ -38,12 +38,12 @@ export const metadata: Metadata = {
     siteName: BRAND.name,
     title: `${BRAND.name} — ${BRAND.tagline}`,
     description:
-      'Transforme la photo de ton pote en canular crédible avec l’IA. 1 € la photo, sans abonnement.',
+      'Transforme n’importe quelle photo en canular crédible avec l’IA. 1 € la photo, sans abonnement.',
   },
   twitter: {
     card: 'summary_large_image',
     title: `${BRAND.name} — ${BRAND.tagline}`,
-    description: 'Transforme la photo de ton pote en canular crédible avec l’IA.',
+    description: 'Transforme n’importe quelle photo en canular crédible avec l’IA.',
   },
   robots: { index: true, follow: true },
 };

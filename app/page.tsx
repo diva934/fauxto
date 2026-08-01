@@ -77,15 +77,20 @@ export default async function HomePage() {
           </p>
         ) : null}
 
+        {/* « n'importe qui » plutôt que « ton pote » : la cible n'est pas
+            limitée aux amis, et l'ancien titre enfermait la promesse. Le verbe
+            « douter » décrit ce que fait réellement le produit sans promettre
+            l'indétectable — ce qui contredirait la mention « Image générée par
+            IA » incrustée dans chaque image et la FAQ. */}
         <h1 className="mt-2 text-center text-[2.6rem] font-extrabold leading-[0.98] tracking-tight text-balance">
-          Envoie à ton pote
+          Fais <span className="text-accent-strong">douter</span>
           <br />
-          <span className="text-accent-strong">une photo</span> qu’il va croire
+          n’importe qui
         </h1>
 
         <p className="mx-auto mt-3 max-w-sm text-center text-[17px] leading-snug text-muted">
-          Sa voiture rayée, sa coupe ratée, lui dans quarante ans. Tu choisis, tu
-          envoies une photo, c’est prêt en dix secondes.
+          Une voiture rayée, une coupe ratée, un visage vieilli de quarante ans.
+          Tu choisis, tu envoies une photo, c’est prêt en dix secondes.
         </p>
 
         <Button asChild size="xl" block className="glow-accent mx-auto mt-6 max-w-sm">
