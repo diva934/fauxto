@@ -18,9 +18,17 @@ const nextConfig: NextConfig = {
    *
    * Rien ne le révèle en local sous Windows, où le binaire est complet et où
    * aucun traçage n'a lieu.
+   *
+   * On vise les deux paquets utiles et non tout `@img/*` : ce dernier contient
+   * les binaires de toutes les plates-formes, recopiés dans chaque fonction.
+   * Les chemins n'existent pas sous Windows, où le motif ne correspond
+   * simplement à rien — le build local reste valide.
    */
   outputFileTracingIncludes: {
-    '/api/**/*': ['./node_modules/@img/**/*'],
+    '/api/**/*': [
+      './node_modules/@img/sharp-linux-x64/**/*',
+      './node_modules/@img/sharp-libvips-linux-x64/**/*',
+    ],
   },
 
   // Le produit est mobile-first et les images sont servies depuis Supabase
