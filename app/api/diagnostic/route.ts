@@ -119,6 +119,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     {
       node: process.version,
       platform: `${process.platform}-${process.arch}`,
+      // Sans ce marqueur, impossible de distinguer « le correctif ne marche
+      // pas » de « le déploiement n'est pas encore passé ».
+      commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? '(local)',
       modules: modules.filter((m) => !m.ok).length ? modules : 'tous chargés',
       echecs: modules.filter((m) => !m.ok),
       sharpRuntime,
