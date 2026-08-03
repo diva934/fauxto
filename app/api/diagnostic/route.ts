@@ -17,6 +17,20 @@ import { NextResponse, type NextRequest } from 'next/server';
  * ELLE NE DIVULGUE AUCUN SECRET : uniquement des booléens de présence pour les
  * variables d'environnement, jamais leur valeur.
  *
+ * DEUX PIÈGES RENCONTRÉS, consignés ici parce qu'ils coûtent chacun un
+ * diagnostic entier :
+ *
+ *   · Une variable ajoutée dans Vercel ne s'applique qu'au BUILD SUIVANT. Tant
+ *     qu'aucun build n'a eu lieu, la sonde la voit absente — ce qui ressemble
+ *     à s'y méprendre à une variable jamais saisie.
+ *
+ *   · Un commit vide ne déclenche rien : Vercel réutilise le déploiement quand
+ *     l'arborescence est identique. Forcer un build depuis le dépôt exige donc
+ *     une modification réelle de fichier.
+ *
+ * D'où le champ `commit` renvoyé plus bas : sans lui, on ne distingue pas un
+ * correctif inopérant d'un déploiement qui n'a jamais eu lieu.
+ *
  * À SUPPRIMER une fois le diagnostic établi.
  */
 
