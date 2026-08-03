@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
+import { AuthFragmentHandler } from '@/components/account/AuthFragmentHandler';
 import { IosSplashLinks } from '@/components/pwa/IosSplashLinks';
 import { BRAND } from '@/lib/utils';
 import './globals.css';
@@ -98,6 +99,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-ink text-text">
+        {/* Rattrape les jetons d'authentification renvoyés dans le fragment
+            d'URL, que le serveur ne peut pas lire. Monté ici parce que Supabase
+            peut retomber sur n'importe quelle page. */}
+        <AuthFragmentHandler />
         {children}
         {/* Plausible : aucun cookie, donc aucun bandeau à afficher. */}
         {plausibleDomain ? (
