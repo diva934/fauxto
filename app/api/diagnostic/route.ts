@@ -40,12 +40,27 @@ async function tryLoad(name: string, load: () => Promise<unknown>) {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  // Garde-fou : la sonde reste inaccessible sans le jeton, même si elle ne
-  // révèle que des booléens. Le jeton passe par un en-tête et non par l'URL :
-  // une URL se retrouve dans les journaux d'accès et l'historique.
+  // Garde-fou. Deux clés acceptées, parce que la première peut manquer :
+  //   · le jeton d'administration, par en-tête et non par l'URL (une URL finit
+  //     dans les journaux d'accès et l'historique) ;
+  //   · à défaut, une session authentifiée — c'est précisément la variable
+  //     `CRON_SECRET` qui peut être absente de l'environnement défaillant, et
+  //     s'y fier seule rendrait la sonde inutilisable là où elle sert.
   const token = request.headers.get('x-diagnostic-token');
   const expected = process.env.CRON_SECRET;
-  if (!expected || token !== expected) {
+  const byToken = Boolean(expected) && token === expected;
+
+  let bySession = false;
+  if (!byToken) {
+    try {
+      const { currentUser } = await import('@/lib/supabase/server');
+      bySession = Boolean(await currentUser());
+    } catch {
+      bySession = false;
+    }
+  }
+
+  if (!byToken && !bySession) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
   }
 
