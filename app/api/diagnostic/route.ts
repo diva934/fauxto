@@ -41,8 +41,9 @@ async function tryLoad(name: string, load: () => Promise<unknown>) {
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   // Garde-fou : la sonde reste inaccessible sans le jeton, même si elle ne
-  // révèle que des booléens.
-  const token = request.nextUrl.searchParams.get('token');
+  // révèle que des booléens. Le jeton passe par un en-tête et non par l'URL :
+  // une URL se retrouve dans les journaux d'accès et l'historique.
+  const token = request.headers.get('x-diagnostic-token');
   const expected = process.env.CRON_SECRET;
   if (!expected || token !== expected) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
