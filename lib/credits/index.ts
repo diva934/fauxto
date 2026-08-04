@@ -142,7 +142,13 @@ export async function getCredits(userId: string): Promise<number> {
   return data?.credits ?? 0;
 }
 
-/** Compteur de preuve sociale de l'accueil. Lu en base, jamais codé en dur. */
+/**
+ * Compteur hebdomadaire de générations. Lu en base, jamais codé en dur.
+ *
+ * Plus affiché nulle part : la pastille de l'accueil a été retirée. Conservé
+ * parce qu'il reste le seul moyen de lire ce chiffre côté application, et que
+ * la fonction Postgres `weekly_generation_count` existe de toute façon.
+ */
 export async function getWeeklyGenerationCount(): Promise<number | null> {
   const supabase = optionalServiceClient();
   if (!supabase) return null;

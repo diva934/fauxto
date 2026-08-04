@@ -1,20 +1,18 @@
-import { Check, Infinity as InfinityIcon, ShieldCheck, Sparkles } from 'lucide-react';
+import { Check, Infinity as InfinityIcon, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Faq } from '@/components/marketing/Faq';
 import { HowItWorks } from '@/components/marketing/HowItWorks';
 import { BeforeAfterTile } from '@/components/marketing/BeforeAfterTile';
 import { Button } from '@/components/ui/button';
-import { getWeeklyGenerationCount } from '@/lib/credits';
 import { TEMPLATES } from '@/lib/templates';
-import { formatCount } from '@/lib/utils';
 
 /**
  * Accueil.
  *
- * La structure suit ce qui fonctionne réellement sur ce marché : compteur au-
- * dessus du titre, mur avant/après dense, garanties, « comment ça marche », FAQ,
- * et le CTA répété trois fois. Le cahier des charges initial interdisait toute
+ * La structure suit ce qui fonctionne réellement sur ce marché : mur avant/après
+ * dense, garanties, « comment ça marche », FAQ, et le CTA répété trois fois.
+ * Le cahier des charges initial interdisait toute
  * section au-delà du premier écran ; on s'en écarte volontairement, parce que
  * répéter le CTA règle le problème que cette règle cherchait à éviter (enterrer
  * le bouton) sans priver le visiteur des réponses dont il a besoin pour payer.
@@ -22,15 +20,14 @@ import { formatCount } from '@/lib/utils';
  * Ce qu'on ne reprend PAS aux concurrents :
  *   · la promesse d'un résultat « indétectable » — elle contredirait la mention
  *     légale que le produit incruste dans chaque image ;
- *   · une note et un nombre d'avis. Aucun avis n'existe : les inventer serait de
- *     la publicité trompeuse. Le seul chiffre affiché est lu en base.
+ *   · une note, un nombre d'avis ou un compteur d'activité. Rien de tout cela
+ *     n'existe en volume suffisant, et l'inventer serait de la publicité
+ *     trompeuse. La page n'affiche donc aucun chiffre d'audience.
+ *
+ * Aucune donnée n'étant plus lue en base, la page est entièrement statique.
  */
 
-export const revalidate = 300;
-
-export default async function HomePage() {
-  const weeklyCount = await getWeeklyGenerationCount();
-
+export default function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col">
       {/* ── Barre haute ──────────────────────────────────────────────────── */}
@@ -62,20 +59,10 @@ export default async function HomePage() {
 
       {/* ── Héros ────────────────────────────────────────────────────────── */}
       <section className="px-5 pt-4">
-        {/* Pastille affichée UNIQUEMENT quand le compteur a de la matière.
-            Annoncer un prix ici était contre-productif : le visiteur arrive de
-            TikTok sans savoir ce qu'est le produit, et le premier élément qu'il
-            lisait parlait d'argent avant même qu'il ait compris ce qu'il
-            achèterait. Tant qu'il n'y a rien de vrai à afficher, on n'affiche
-            rien — et la grille avant/après, qui est ce qui vend, remonte
-            d'autant. */}
-        {weeklyCount !== null && weeklyCount > 0 ? (
-          <p className="bg-glass mx-auto flex w-fit items-center gap-1.5 rounded-pill px-3 py-1.5 text-xs">
-            <Sparkles className="size-3.5 text-accent-strong" aria-hidden />
-            <span className="font-bold tabular-nums">{formatCount(weeklyCount)}</span>
-            <span className="text-muted">photos cette semaine</span>
-          </p>
-        ) : null}
+        {/* Le compteur hebdomadaire a été retiré. Il ne se déclenchait qu'au-
+            delà d'une génération dans la semaine, retombait à zéro chaque lundi,
+            et un chiffre faible se remarque davantage que pas de chiffre du
+            tout. La grille avant/après, qui est ce qui vend, remonte d'autant. */}
 
         {/* « n'importe qui » plutôt que « ton pote » : la cible n'est pas
             limitée aux amis, et l'ancien titre enfermait la promesse. Le verbe
