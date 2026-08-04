@@ -17,9 +17,13 @@ import { ShareButtons } from './ShareButtons';
  *      c'est le seul instant où l'utilisateur vient de vivre le moment de
  *      satisfaction et acceptera.
  *
- * La mention « Image générée par IA » n'est PAS un élément d'interface : elle est
- * incrustée dans les pixels par le serveur. Elle survit donc à la capture
- * d'écran, au téléchargement et au repartage — c'est ce que l'AI Act exige.
+ * Aucune mention n'est incrustée dans les pixels : elle lèverait le doute du
+ * destinataire, donc l'objet du produit. Le marquage de provenance, lui, reste
+ * apposé — il est invisible à l'œil et lisible à l'analyse.
+ *
+ * Conséquence assumée : c'est à l'utilisateur de dire que l'image est générée
+ * quand il la partage. L'écran le rappelle, à l'instant précis où il s'apprête
+ * à le faire — le seul moment où l'avertissement a une chance d'être lu.
  */
 export function ResultScreen({
   blob,
@@ -54,7 +58,7 @@ export function ResultScreen({
           // eslint-disable-next-line @next/next/no-img-element -- blob local : next/image n'apporte rien et ne sait pas optimiser un object URL
           <img
             src={objectUrl}
-            alt={`Résultat du prank ${templateName}. La mention « Image générée par IA » est incrustée dans l’image.`}
+            alt={`Résultat du prank ${templateName}, image générée par intelligence artificielle.`}
             className="aspect-4/5 w-full object-cover"
           />
         ) : (
@@ -63,7 +67,8 @@ export function ResultScreen({
       </div>
 
       <p className="mt-3 text-center text-xs text-muted">
-        La mention «&nbsp;Image générée par IA&nbsp;» est incrustée dans l’image.
+        Dis à la personne que l’image est générée par IA quand tu la partages.
+        C’est à toi de le faire : rien ne l’indique sur l’image.
       </p>
 
       {/* 2. Partage — un seul tap. */}

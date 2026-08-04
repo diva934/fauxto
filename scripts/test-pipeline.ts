@@ -93,15 +93,16 @@ async function main(): Promise<void> {
   check('Format de sortie JPEG', free.mimeType === 'image/jpeg');
   await writeFile(resolve(OUT_DIR, 'gratuit-avec-filigrane.jpg'), free.image);
 
-  // ── 2. Mention légale ─────────────────────────────────────────────────────
-  console.log('\n2. Mention légale « Image générée par IA »');
-  // La pastille est sombre et posée en bas à gauche, par-dessus une bande
-  // blanche : si elle est bien là, la luminance de la zone chute nettement.
+  // ── 2. Absence de pastille visible ────────────────────────────────────────
+  console.log('\n2. Absence de pastille visible sur l’image');
+  // La pastille était sombre et posée en bas à gauche, par-dessus une bande
+  // blanche : sa présence faisait chuter nettement la luminance de la zone.
+  // On vérifie désormais l'inverse — la zone doit rester claire.
   //
-  // La zone mesurée est volontairement ÉTROITE et entièrement à l'intérieur de
-  // la pastille. Une zone large diluerait le noir dans le blanc environnant et
-  // donnerait une moyenne ambiguë, incapable de distinguer « mention absente »
-  // de « mention présente mais petite ».
+  // La zone mesurée est volontairement ÉTROITE et située là où la pastille se
+  // trouvait. Une zone large diluerait le noir dans le blanc environnant et
+  // donnerait une moyenne ambiguë, incapable de distinguer « pastille absente »
+  // de « pastille présente mais petite ».
   const labelRegion = {
     left: Math.round(free.width * 0.05),
     top: Math.round(free.height * 0.935),
@@ -110,9 +111,9 @@ async function main(): Promise<void> {
   };
   const labelLuminance = await regionMeanLuminance(free.image, labelRegion);
   check(
-    `Pastille sombre détectée en bas à gauche (luminance ${labelLuminance.toFixed(0)}/255 sur fond blanc)`,
-    labelLuminance < 160,
-    'la zone est restée claire, la mention n’a pas été posée',
+    `Aucune pastille en bas à gauche (luminance ${labelLuminance.toFixed(0)}/255, fond blanc intact)`,
+    labelLuminance > 200,
+    'la zone est sombre : une pastille a été posée alors qu’elle doit être absente',
   );
 
   // ── 3. Filigrane commercial ───────────────────────────────────────────────
@@ -130,9 +131,16 @@ async function main(): Promise<void> {
 
   check('Version payante marquée sans filigrane', paid.marking.commercialWatermark === false);
   check('Version gratuite marquée avec filigrane', free.marking.commercialWatermark === true);
+  // La pastille visible est désactivée : elle levait le doute du destinataire,
+  // donc l'objet même du produit. Ce qui doit rester vérifié, c'est que le
+  // marquage MACHINE tient — c'est lui qui porte l'obligation du fournisseur.
   check(
-    'La mention légale est présente sur les DEUX versions',
-    free.marking.legalLabel === true && paid.marking.legalLabel === true,
+    'La pastille visible est absente des DEUX versions',
+    free.marking.legalLabel === false && paid.marking.legalLabel === false,
+  );
+  check(
+    'Le manifeste C2PA est apposé sur les DEUX versions',
+    free.marking.c2paApplied === true && paid.marking.c2paApplied === true,
   );
 
   // Le filigrane répété doit rendre la version gratuite mesurablement différente

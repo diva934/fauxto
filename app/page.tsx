@@ -80,8 +80,8 @@ export default async function HomePage() {
         {/* « n'importe qui » plutôt que « ton pote » : la cible n'est pas
             limitée aux amis, et l'ancien titre enfermait la promesse. Le verbe
             « douter » décrit ce que fait réellement le produit sans promettre
-            l'indétectable — ce qui contredirait la mention « Image générée par
-            IA » incrustée dans chaque image et la FAQ. */}
+            l'indétectable — ce qui contredirait le marquage de provenance
+            apposé sur chaque image et la FAQ. */}
         <h1 className="mt-2 text-center text-[2.6rem] font-extrabold leading-[0.98] tracking-tight text-balance">
           Fais <span className="text-accent-strong">douter</span>
           <br />
@@ -153,11 +153,12 @@ export default async function HomePage() {
       {/* ── Pied de page ─────────────────────────────────────────────────── */}
       <footer className="border-t border-line px-5 pb-4 safe-bottom">
         <p className="pt-5 text-[11px] leading-relaxed text-muted">
-          Toutes les images produites portent la mention «&nbsp;Image générée par
-          IA&nbsp;» incrustée et des métadonnées de provenance, conformément à
-          l’article 50 du règlement européen sur l’IA. Elles sont supprimées de
-          nos serveurs sous 24&nbsp;heures. Les photos de personnes mineures sont
-          refusées automatiquement.
+          Toutes les images produites portent des métadonnées de provenance et un
+          marquage machine-lisible, conformément à l’article 50 du règlement
+          européen sur l’IA. Prévenir le destinataire qu’une image est générée
+          vous incombe. Elles sont supprimées de nos serveurs sous
+          24&nbsp;heures. Les photos de personnes mineures sont refusées
+          automatiquement.
         </p>
         <nav className="mt-2 flex flex-wrap items-center gap-x-1 text-[11px] text-muted">
           {[

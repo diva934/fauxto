@@ -58,9 +58,10 @@ export default function CreerPage() {
 
       <div className="mt-auto px-5 pt-8">
         <p className="rounded-card border border-line bg-surface p-4 text-xs leading-relaxed text-muted">
-          Toutes les images produites portent la mention «&nbsp;Image générée par
-          IA&nbsp;» et sont supprimées de nos serveurs au bout de 24&nbsp;heures.
-          Les photos de personnes mineures sont refusées automatiquement.
+          Toutes les images produites portent des métadonnées de provenance
+          invisibles et sont supprimées de nos serveurs au bout de
+          24&nbsp;heures. Les photos de personnes mineures sont refusées
+          automatiquement.
         </p>
       </div>
     </main>

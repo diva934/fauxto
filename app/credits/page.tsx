@@ -97,8 +97,9 @@ export default async function CreditsPage({
       </ul>
 
       <p className="mt-4 pb-6 text-center text-xs leading-relaxed text-muted">
-        La mention «&nbsp;Image générée par IA&nbsp;» reste présente sur toutes les
-        images, y compris payantes : c’est une obligation légale, pas une option.
+        Les métadonnées de provenance restent présentes sur toutes les images, y
+        compris payantes : c’est une obligation légale, pas une option. Aucune
+        mention n’est visible sur l’image.
         <br />
         <Link href="/cgv" className="underline hover:text-text">
           Conditions de vente

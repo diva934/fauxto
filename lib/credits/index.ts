@@ -21,8 +21,9 @@ import { optionalServiceClient, warnNoSupabaseOnce } from '@/lib/supabase/servic
  * en diagonale) était réservé au palier gratuit. Plus de palier gratuit, donc
  * plus de filigrane nulle part. Le produit perd au passage un levier de
  * croissance : chaque image partagée ne porte plus l'adresse du site.
- * La mention légale « Image générée par IA », elle, reste sur TOUTES les
- * images — c'est une obligation, pas une option commerciale.
+ * Le marquage de provenance, lui, reste sur TOUTES les images — c'est une
+ * obligation, pas une option commerciale. Seule la pastille VISIBLE a été
+ * retirée, et aucun achat n'y change rien : voir `VISIBLE_LEGAL_LABEL`.
  */
 export type Entitlement = {
   kind: 'credit';

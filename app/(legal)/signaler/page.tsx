@@ -43,8 +43,8 @@ export default function SignalerPage() {
         <li>
           En revanche, nous n’avons aucun contrôle sur une copie déjà partagée
           ailleurs. Si l’image circule, conserve-la comme preuve : elle porte des
-          métadonnées de provenance et la mention «&nbsp;Image générée par
-          IA&nbsp;», ce qui établit son caractère fictif.
+          métadonnées de provenance et un marquage machine-lisible, qui
+          établissent son caractère artificiel à l’analyse.
         </li>
       </ul>
 

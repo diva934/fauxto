@@ -81,10 +81,6 @@ export default function MentionsLegalesPage() {
       </p>
       <ul>
         <li>
-          une <strong>mention visible</strong> «&nbsp;Image générée par IA&nbsp;»
-          incrustée dans l’image elle-même ;
-        </li>
-        <li>
           des <strong>métadonnées de provenance C2PA</strong> indiquant le modèle
           utilisé et la date de génération ;
         </li>
@@ -96,6 +92,12 @@ export default function MentionsLegalesPage() {
       <p>
         Ces marquages ne sont retirés dans aucune circonstance, y compris pour les
         utilisateurs ayant acheté des crédits.
+      </p>
+      <p>
+        Les images ne portent <strong>aucune mention visible</strong> incrustée
+        dans les pixels. L’obligation d’<strong>informer le destinataire</strong>
+        du caractère artificiel de l’image, au moment de la diffuser, incombe
+        donc à l’utilisateur qui la partage. Le service ne s’y substitue pas.
       </p>
 
       <h2>4. Propriété intellectuelle</h2>

@@ -75,11 +75,11 @@ export default function CgvPage() {
         après le choix de la photo, juste avant la génération.
       </p>
       <p>
-        Aucune image ne porte de filigrane commercial. En revanche, la mention
-        légale «&nbsp;Image générée par IA&nbsp;» et les métadonnées de provenance
-        sont présentes sur <strong>toutes les images sans exception</strong> :
-        elles répondent à une obligation réglementaire et ne constituent pas une
-        option commerciale.
+        Aucune image ne porte de filigrane commercial ni de mention visible. En
+        revanche, les métadonnées de provenance et le marquage machine-lisible
+        sont présents sur <strong>toutes les images sans exception</strong> :
+        ils répondent à une obligation réglementaire et ne constituent pas une
+        option commerciale. Aucun achat ne les retire.
       </p>
 
       <h2>6. Commande et paiement</h2>

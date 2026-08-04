@@ -16,8 +16,8 @@ import { serverEnv } from '@/lib/env';
  *
  * 2. Si la signature échoue, on ne bloque pas l'utilisateur — mais on ne fait
  *    pas semblant non plus : l'appelant reçoit `applied: false` et l'écrit dans
- *    la table `generations`. La mention visible et SynthID restent en place,
- *    donc l'image n'est jamais livrée sans marquage.
+ *    la table `generations`. SynthID, apposé par le modèle lui-même, reste en
+ *    place : l'image n'est donc jamais livrée totalement sans marquage.
  */
 
 /**

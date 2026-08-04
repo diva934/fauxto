@@ -71,8 +71,8 @@ export default function CguPage() {
           professionnel ou assurantiel.
         </li>
         <li>
-          Retrait, masquage, recadrage ou altération de la mention «&nbsp;Image
-          générée par IA&nbsp;» ou des métadonnées de provenance.
+          Retrait, masquage ou altération des métadonnées de provenance et du
+          marquage machine-lisible.
         </li>
         <li>
           Contournement des filtres de modération, automatisation des requêtes,
@@ -102,9 +102,16 @@ export default function CguPage() {
       <h2>5. Nature des images produites</h2>
       <p>
         Les images générées sont <strong>fictives</strong>. Elles ne documentent
-        aucun fait. Chacune porte, de manière indélébile, la mention «&nbsp;Image
-        générée par IA&nbsp;», des métadonnées de provenance C2PA et un marquage
-        machine-lisible.
+        aucun fait. Chacune porte, de manière indélébile, des métadonnées de
+        provenance C2PA et un marquage machine-lisible, qui permettent d’établir
+        leur origine artificielle.
+      </p>
+      <p>
+        En revanche, elles ne portent <strong>aucune mention visible</strong>.
+        Vous vous engagez, en partageant une image produite par le service, à
+        <strong> informer son destinataire</strong> qu’elle a été générée par
+        intelligence artificielle. Cette obligation vous incombe personnellement
+        et le service ne la remplit pas à votre place.
       </p>
 
       <h2>6. Disponibilité</h2>

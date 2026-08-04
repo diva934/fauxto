@@ -21,8 +21,8 @@ const ITEMS = [
       <>
         Sur les scénarios proposés, oui — c’est justement pour ça qu’ils sont
         limités à dix. Chaque prank a été calibré pour tenir la route. En
-        revanche, chaque image porte la mention «&nbsp;Image générée par
-        IA&nbsp;» incrustée dans les pixels : elle est crédible, pas
+        revanche, chaque image porte un marquage de provenance invisible à
+        l’œil mais lisible à l’analyse : elle est crédible sur le moment, pas
         indétectable, et c’est volontaire.
       </>
     ),
@@ -32,8 +32,10 @@ const ITEMS = [
     a: (
       <>
         Oui, dans le cadre prévu. Fauxto applique le règlement européen sur l’IA
-        (article 50) : mention visible sur l’image, métadonnées de provenance
-        C2PA, marquage machine-lisible. Le service refuse automatiquement les
+        (article 50) : métadonnées de provenance C2PA et marquage
+        machine-lisible sur chaque image. En revanche, rien n’est écrit sur
+        l’image&nbsp;: prévenir la personne que la photo est générée, au moment
+        de l’envoyer, c’est à toi de le faire. Le service refuse automatiquement les
         photos de personnes mineures, les contenus à caractère sexuel, les
         personnalités publiques et les scènes évoquant la maladie, la violence ou
         un décès.
