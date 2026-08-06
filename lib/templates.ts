@@ -268,6 +268,27 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     thumbnailAfter: '/samples/deguisement-apres.jpg',
     emoji: '🎭',
   },
+  {
+    id: 'voiture-reve',
+    slug: 'voiture-de-reve',
+    nameFr: 'La voiture de rêve',
+    taglineFr: 'Sa caisse devient une GT3 RS',
+    descriptionFr:
+      'Remplace sa voiture par une Porsche 911 GT3 RS grise, garée exactement au même endroit. Même place, même angle, même ombre — seule la voiture change. Marche d’autant mieux qu’il connaît sa propre bagnole par cœur.',
+    // Le modèle connaît les modèles de voitures par leur nom : aucune banque
+    // d'images n'est nécessaire. Ce qui demande de l'insistance, ce n'est pas
+    // la Porsche, c'est de NE PAS bouger la caméra. Sans les contraintes de
+    // position, le modèle recadre, déplace le sujet et change l'arrière-plan —
+    // et le prank tombe, parce que ce qui rend l'image crédible c'est justement
+    // que le décor soit reconnaissable.
+    prompt:
+      'Swap the vehicle in this photo for a grey Porsche 911 GT3 RS with its distinctive large rear wing. CRITICAL: the new car sits in the identical spot, seen from the identical camera angle, with its wheels touching the ground at the same points as the original car. Its shadow falls in the same direction with the same softness. Do not move the camera, do not change the framing, do not alter the background, the kerb, the road markings, the houses or the sky. The result must look like the same photo taken on a day when a different car was parked there. Photorealistic amateur smartphone photo, natural daylight.',
+    aspectRatio: '4:5',
+    model: 'flash',
+    thumbnailBefore: '/samples/voiture-reve-avant.jpg',
+    thumbnailAfter: '/samples/voiture-reve-apres.jpg',
+    emoji: '🏎️',
+  },
 ] as const;
 
 const BY_ID = new Map(TEMPLATES.map((t) => [t.id, t]));

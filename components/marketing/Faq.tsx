@@ -19,8 +19,8 @@ const ITEMS = [
     q: 'Le rendu est-il crédible ?',
     a: (
       <>
-        Sur les scénarios proposés, oui — c’est justement pour ça qu’ils sont
-        limités à dix. Chaque prank a été calibré pour tenir la route. En
+        Sur les scénarios proposés, oui — c’est justement pour ça que leur
+        nombre reste limité. Chaque prank a été calibré pour tenir la route. En
         revanche, chaque image porte un marquage de provenance invisible à
         l’œil mais lisible à l’analyse : elle est crédible sur le moment, pas
         indétectable, et c’est volontaire.

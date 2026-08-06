@@ -104,7 +104,7 @@ export default function HomePage() {
       {/* ── Mur avant/après ──────────────────────────────────────────────── */}
       <section className="px-5 pt-10" aria-labelledby="pranks">
         <h2 id="pranks" className="sr-only">
-          Les dix pranks disponibles
+          Les {TEMPLATES.length} pranks disponibles
         </h2>
         <div className="grid grid-cols-2 gap-2.5">
           {TEMPLATES.map((template, index) => (
