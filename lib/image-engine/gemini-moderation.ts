@@ -17,13 +17,30 @@ const PROVIDER = 'google';
  * `-flash-live-preview` et `-flash-tts-preview`.
  *
  * Comme la modération est fail-closed, un identifiant introuvable faisait
- * refuser 100 % des générations sans indice sur la cause. Le défaut est donc
- * `gemini-3.6-flash` (stable, multimodal), toujours surchargeable par
- * `GEMINI_MODERATION_MODEL` sans redéploiement — p. ex. `gemini-3.5-flash-lite`
- * (5× moins cher en entrée) une fois le taux de faux refus mesuré.
+ * refuser 100 % des générations sans indice sur la cause. L'identifiant reste
+ * surchargeable par `GEMINI_MODERATION_MODEL` sans redéploiement.
+ *
+ * POURQUOI `gemini-3.5-flash-lite` ET PLUS `gemini-3.6-flash`. Mesuré sur les
+ * photos d'exemple, six appels par modèle :
+ *
+ *   gemini-3.6-flash        7 à 28 s, 5 reprises sur 8, un refus franc
+ *   gemini-3.5-flash        7 à 23 s, un 503 « high demand »
+ *   gemini-3.5-flash-lite   ~1 s de médiane, aucune erreur
+ *
+ * Les modèles complets dépassaient régulièrement le délai d'attente, et comme
+ * la modération est fail-closed, chaque dépassement REFUSAIT la photo d'un
+ * client légitime avec « on n'a pas pu vérifier cette photo ». C'était la
+ * cause du symptôme signalé : des refus fréquents sur des images parfaitement
+ * inoffensives.
+ *
+ * La version « lite » n'est pas plus permissive : sur les mêmes photos, elle
+ * rend les mêmes estimations d'âge, et elle a signalé le sujet le plus jeune
+ * en `minorLikelihood: high` là où le modèle complet disait `medium`. Estimer
+ * un âge et détecter de la nudité sur une image de 512 px ne demande pas un
+ * modèle de raisonnement.
  */
 const DEFAULT_MODERATION_MODEL =
-  process.env.GEMINI_MODERATION_MODEL?.trim() || 'gemini-3.6-flash';
+  process.env.GEMINI_MODERATION_MODEL?.trim() || 'gemini-3.5-flash-lite';
 
 /**
  * La modération doit être rapide : elle s'ajoute au temps d'attente perçu, et
@@ -49,8 +66,18 @@ const MODERATION_TIMEOUT_MS = 15_000;
  */
 const MODERATION_MAX_EDGE = 512;
 
-/** Une seule reprise, réservée aux échecs manifestement transitoires. */
+/** Reprises réservées aux échecs manifestement transitoires. */
 const RETRYABLE_CODES = new Set(['timeout', 'provider_error']);
+
+/**
+ * Tentatives au total, reprise comprise.
+ *
+ * Deux auparavant, quand un appel coûtait 15 s et qu'une troisième tentative
+ * aurait porté le pire cas à 45 s. Avec un modèle qui répond en une seconde,
+ * une tentative supplémentaire ne coûte presque rien et absorbe les à-coups du
+ * fournisseur — dont un 503 « high demand » observé pendant la mesure.
+ */
+const MAX_ATTEMPTS = 3;
 
 const ANALYSIS_PROMPT = `You are an image safety classifier for a photo-editing service. Analyse the image and report only what you can actually observe. Do not speculate.
 
@@ -126,19 +153,28 @@ export class GeminiModerationEngine implements ModerationEngine {
   async analyze(input: { image: Buffer; mimeType: string }): Promise<VisionAnalysis> {
     const reduced = await downscaleForModeration(input.image);
 
-    try {
-      return await this.attempt(reduced);
-    } catch (cause) {
-      // Une reprise unique, et UNIQUEMENT sur des échecs transitoires. Ça ne
-      // relâche pas le fail-closed : si la reprise échoue aussi, l'exception
-      // remonte et `moderateSourceImage` transforme ça en refus. Sans cette
-      // reprise, un simple 504 passager refusait la photo d'un client payant.
-      if (cause instanceof EngineError && RETRYABLE_CODES.has(cause.code)) {
-        console.warn(`[moderation] ${cause.code} — une reprise.`);
+    // Reprises UNIQUEMENT sur des échecs transitoires. Ça ne relâche pas le
+    // fail-closed : si toutes les tentatives échouent, l'exception remonte et
+    // `moderateSourceImage` la transforme en refus. Sans reprise, un simple
+    // 504 passager refusait la photo d'un client payant.
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+      try {
         return await this.attempt(reduced);
+      } catch (cause) {
+        lastError = cause;
+
+        const transient = cause instanceof EngineError && RETRYABLE_CODES.has(cause.code);
+        if (!transient || attempt === MAX_ATTEMPTS) break;
+
+        console.warn(
+          `[moderation] ${(cause as EngineError).code} — reprise ${attempt}/${MAX_ATTEMPTS - 1}.`,
+        );
       }
-      throw cause;
     }
+
+    throw lastError;
   }
 
   private async attempt(input: { data: Buffer; mimeType: string }): Promise<VisionAnalysis> {
