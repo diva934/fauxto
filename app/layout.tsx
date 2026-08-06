@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { AuthFragmentHandler } from '@/components/account/AuthFragmentHandler';
 import { IosSplashLinks } from '@/components/pwa/IosSplashLinks';
+import { ServiceWorkerRegistrar } from '@/components/pwa/ServiceWorkerRegistrar';
 import { BRAND } from '@/lib/utils';
 import './globals.css';
 
@@ -103,6 +104,9 @@ export default function RootLayout({
             d'URL, que le serveur ne peut pas lire. Monté ici parce que Supabase
             peut retomber sur n'importe quelle page. */}
         <AuthFragmentHandler />
+        {/* Sans service worker enregistré, Chrome n'émet jamais
+            `beforeinstallprompt` et l'invitation à installer ne s'affiche pas. */}
+        <ServiceWorkerRegistrar />
         {children}
         {/* Plausible : aucun cookie, donc aucun bandeau à afficher. */}
         {plausibleDomain ? (
