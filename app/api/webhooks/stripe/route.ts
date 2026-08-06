@@ -1,5 +1,6 @@
 import type Stripe from 'stripe';
 import { serverEnv } from '@/lib/env';
+import { attributeConversion, CHECKOUT_REF_KEY } from '@/lib/partners';
 import { CHECKOUT_METADATA, stripe } from '@/lib/stripe';
 import { serviceClient } from '@/lib/supabase/service';
 
@@ -93,6 +94,34 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     console.info(`[stripe-webhook] ${credits} crédit(s) accordé(s) — ${packId}.`);
+
+    // ── Attribution partenaire ────────────────────────────────────────────
+    // APRÈS le crédit, et volontairement hors de son sort : une attribution
+    // ratée ne doit jamais empêcher un acheteur d'obtenir ce qu'il a payé.
+    // Le montant vient de Stripe, pas du pack : c'est ce qui a réellement été
+    // encaissé, y compris si le prix du pack change plus tard.
+    const refCode = session.metadata?.[CHECKOUT_REF_KEY];
+    if (refCode) {
+      try {
+        const attributed = await attributeConversion({
+          code: refCode,
+          userId,
+          stripeSessionId: session.id,
+          amountCents: session.amount_total ?? 0,
+        });
+        console.info(
+          attributed
+            ? `[stripe-webhook] Vente attribuée au partenaire ${refCode}.`
+            : `[stripe-webhook] Aucune attribution pour ${refCode} (code inconnu, achat par le partenaire lui-même, ou rejeu).`,
+        );
+      } catch (cause) {
+        // On avale : le crédit est déjà accordé, et renvoyer 500 ferait
+        // rejouer le webhook, donc retenter un crédit déjà donné.
+        const detail = cause instanceof Error ? cause.message : String(cause);
+        console.error('[stripe-webhook] Attribution partenaire impossible :', detail);
+      }
+    }
+
     return new Response('Crédité', { status: 200 });
   } catch (cause) {
     const detail = cause instanceof Error ? cause.message : String(cause);

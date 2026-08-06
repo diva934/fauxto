@@ -154,6 +154,10 @@ export default function HomePage() {
             { href: '/cgv', label: 'CGV' },
             { href: '/cgu', label: 'CGU' },
             { href: '/signaler', label: 'Signaler une image' },
+            // Discret volontairement : la cible n'est pas l'acheteur, c'est le
+            // créateur de contenu, qui va chercher ce lien parce qu'il sait
+            // déjà ce qu'il cherche.
+            { href: '/partenaire', label: 'Devenir partenaire' },
           ].map((link) => (
             <Link
               key={link.href}

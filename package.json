@@ -11,6 +11,7 @@
     "diagnose": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/doctor.ts",
     "credits": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/credits.ts",
     "probe": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/probe-chain.ts",
+    "partners": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/partners.ts",
     "test:session": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/test-session.ts",
     "test:pipeline": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/test-pipeline.ts",
     "test:templates": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/test-templates.ts",

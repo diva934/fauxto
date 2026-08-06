@@ -1,6 +1,8 @@
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { hasStripe, serverEnv } from '@/lib/env';
 import { getPack } from '@/lib/packs';
+import { CHECKOUT_REF_KEY, isValidCode, REF_COOKIE } from '@/lib/partners';
 import { CHECKOUT_METADATA, stripe } from '@/lib/stripe';
 import { currentUser } from '@/lib/supabase/server';
 import { BRAND } from '@/lib/utils';
@@ -78,6 +80,13 @@ export async function POST(request: Request): Promise<Response> {
   const siteUrl = serverEnv.siteUrl;
   const returnPath = safeReturnPath(parsed.next);
 
+  // Code partenaire, s'il y en a un. Lu depuis le cookie posé par `/r/<code>`
+  // et jamais depuis le corps de la requête : sinon n'importe qui s'attribuerait
+  // ses propres achats en forgeant l'appel. Il est figé ici, dans les
+  // métadonnées Stripe, parce que le webhook n'aura aucun cookie à relire.
+  const refCookie = (await cookies()).get(REF_COOKIE)?.value ?? '';
+  const refCode = isValidCode(refCookie) ? refCookie : null;
+
   try {
     const session = await stripe().checkout.sessions.create({
       // Paiement unique, jamais d'abonnement.
@@ -104,6 +113,7 @@ export async function POST(request: Request): Promise<Response> {
         [CHECKOUT_METADATA.packId]: pack.id,
         [CHECKOUT_METADATA.credits]: String(pack.credits),
         [CHECKOUT_METADATA.userId]: user.id,
+        ...(refCode ? { [CHECKOUT_REF_KEY]: refCode } : {}),
       },
       // On repasse par /credits/merci, qui attend la confirmation du webhook
       // avant de renvoyer l'acheteur là où il en était. Revenir directement sur

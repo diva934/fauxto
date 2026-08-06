@@ -81,6 +81,44 @@ export type Report = {
   created_at: string;
 };
 
+export type Partner = {
+  id: string;
+  user_id: string;
+  code: string;
+  display_name: string | null;
+  commission_rate: number;
+  created_at: string;
+};
+
+export type PartnerClick = {
+  id: string;
+  partner_id: string;
+  visitor_hash: string | null;
+  created_at: string;
+};
+
+export type PartnerConversion = {
+  id: string;
+  partner_id: string;
+  user_id: string | null;
+  stripe_session_id: string;
+  amount_cents: number;
+  commission_cents: number;
+  created_at: string;
+};
+
+/** Ligne unique renvoyée par `partner_stats`. Tous les compteurs sont agrégés. */
+export type PartnerStats = {
+  code: string;
+  commission_rate: number;
+  clicks: number;
+  unique_visitors: number;
+  conversions: number;
+  revenue_cents: number;
+  commission_cents: number;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -118,6 +156,29 @@ export type Database = {
         Update: Partial<Report>;
         Relationships: [];
       };
+      partners: {
+        Row: Partner;
+        Insert: Partial<Partner> & { user_id: string; code: string };
+        Update: Partial<Partner>;
+        Relationships: [];
+      };
+      partner_clicks: {
+        Row: PartnerClick;
+        Insert: Partial<PartnerClick> & { partner_id: string };
+        Update: Partial<PartnerClick>;
+        Relationships: [];
+      };
+      partner_conversions: {
+        Row: PartnerConversion;
+        Insert: Partial<PartnerConversion> & {
+          partner_id: string;
+          stripe_session_id: string;
+          amount_cents: number;
+          commission_cents: number;
+        };
+        Update: Partial<PartnerConversion>;
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -150,6 +211,24 @@ export type Database = {
         Returns: { id: string; output_path: string }[];
       };
       mark_generations_purged: { Args: { p_ids: string[] }; Returns: number };
+      create_partner: {
+        Args: { p_user_id: string; p_code: string; p_display_name?: string | null };
+        Returns: { partner_id: string | null; code: string | null; created: boolean }[];
+      };
+      record_partner_click: {
+        Args: { p_code: string; p_visitor_hash: string | null };
+        Returns: boolean;
+      };
+      record_partner_conversion: {
+        Args: {
+          p_code: string;
+          p_user_id: string;
+          p_stripe_session_id: string;
+          p_amount_cents: number;
+        };
+        Returns: boolean;
+      };
+      partner_stats: { Args: { p_user_id: string }; Returns: PartnerStats[] };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
