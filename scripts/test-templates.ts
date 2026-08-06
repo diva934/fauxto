@@ -43,7 +43,7 @@ function parseArgs(argv: string[]): Args {
   const photoPath = positional[0];
   if (!photoPath) {
     console.error(
-      'Usage : pnpm test:templates <chemin-photo> [--only=id1,id2] [--out=dossier] [--skip-moderation] [--no-watermark]',
+      'Usage : pnpm test:templates <chemin-photo> [--only=id1,id2] [--out=dossier] [--skip-moderation] [--watermark]',
     );
     process.exit(1);
   }
@@ -53,7 +53,12 @@ function parseArgs(argv: string[]): Args {
     only: flags.has('only') ? (flags.get('only') as string).split(',').map((s) => s.trim()) : null,
     outDir: resolve(process.cwd(), flags.get('out') ?? './test-output'),
     skipModeration: flags.get('skip-moderation') === 'true',
-    watermarked: flags.get('no-watermark') !== 'true',
+    // Sans filigrane par DÉFAUT, parce que c'est ce que la production livre :
+    // le filigrane commercial était réservé au palier gratuit, supprimé depuis.
+    // `Entitlement.watermarked` est d'ailleurs typé littéralement `false`, donc
+    // aucun autre cas ne compile. Garder l'ancien défaut faisait mentir chaque
+    // rendu de test sur ce que reçoit réellement un client.
+    watermarked: flags.get('watermark') === 'true',
   };
 }
 

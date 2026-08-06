@@ -77,7 +77,7 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     descriptionFr:
       "Transforme n'importe quelle coupe en catastrophe capillaire au bol. Le visage et le décor ne bougent pas : c'est ça qui rend le truc crédible.",
     prompt:
-      'Change only the hairstyle of the person to a comically bad, uneven bowl haircut. Preserve the face, expression, clothing and background exactly. Photorealistic.',
+      'Give the person a genuinely botched home haircut. ALL of the following must be visible: clearly uneven lengths between the left and right sides; a crooked fringe cut too short and not level; at least one bald patch or gouge where the clippers went too deep; ragged, unblended edges around the ears and the neckline. It must read as an accident, not as a deliberate style — a neat bowl cut is wrong. Keep the face, expression, skin, clothing and background exactly as they are. Photorealistic amateur smartphone photo.',
     aspectRatio: '4:5',
     model: 'flash',
     thumbnailBefore: '/samples/coupe-ratee-avant.jpg',
@@ -107,7 +107,7 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     descriptionFr:
       "Colle une musculature de compétition sur le corps de ton pote, en gardant son visage intact. L'écart entre les deux fait tout le sel.",
     prompt:
-      "Transform the person's body into an extremely muscular bodybuilder physique, comically exaggerated. Keep the face and background unchanged. Photorealistic.",
+      "Make the person's body massively muscular, like a competitive bodybuilder: hugely developed shoulders, chest, arms, forearms and neck, so the change is unmistakable at a glance. CRITICAL: the person keeps the exact same garment, and that garment stays fully opaque fabric — stretched tight over the new bulk with realistic tension folds and strained seams. Never show skin, abdominal muscles or chest definition through the cloth; the fabric is never transparent and muscles are never painted onto it. Keep the face, head size, hands, background and lighting unchanged. Photorealistic amateur smartphone photo.",
     aspectRatio: '4:5',
     model: 'flash',
     thumbnailBefore: '/samples/bodybuilder-avant.jpg',
@@ -160,7 +160,7 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     descriptionFr:
       "Ajoute un tatouage franchement mal dessiné sur l'avant-bras. Assez réaliste pour y croire, assez moche pour paniquer.",
     prompt:
-      "Add a large, badly drawn amateur tattoo on the person's forearm. Photorealistic tattoo ink on skin. Keep everything else identical.",
+      "Add a large amateur tattoo on the person's forearm, executed like a botched home job: shaky uneven linework, wobbly outlines that do not meet, patchy and blotchy ink density, crude shading. The subject of the tattoo is a crude drawing — never lettering. The ink must sit under the skin and follow the curve of the forearm, deforming with it, not float flat on top. ABSOLUTELY NO text, no letters, no numbers, no words, no captions anywhere in the image. Keep the face, pose, clothing and background identical. Photorealistic amateur smartphone photo.",
     aspectRatio: '4:5',
     model: 'flash',
     thumbnailBefore: '/samples/tatouage-rate-avant.jpg',
@@ -210,7 +210,7 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     // c'est une contrefaçon de marque — et les éditeurs de presse défendent la
     // leur. Les zones de texte doivent rester vides : c'est `sharp` qui écrit.
     prompt:
-      'Turn this photo into a glossy fashion magazine cover layout, with realistic paper texture and cover framing. Leave all text areas completely blank and empty. No brand names, no logos, no magazine titles, no words anywhere in the image.',
+      'Restyle this snapshot into the cover PHOTOGRAPH of a glossy fashion magazine. The image itself must visibly change: replace the surroundings with a clean seamless studio backdrop, light the face with a professional key light and soft fill, smooth and retouch the skin, deepen the contrast and colour grading, and recompose the subject as a centred portrait with clear empty headroom at the top and empty space across the bottom. Add the subtle sheen of printed glossy paper. Leaving the original casual snapshot untouched is wrong — it must look shot in a studio. Do NOT add any text, letters, numbers, logos, barcodes or magazine titles anywhere; those areas stay completely empty. Keep the person recognisable: same face, same hair, same clothing.',
     aspectRatio: '4:5',
     model: 'pro',
     thumbnailBefore: '/samples/une-magazine-avant.jpg',
