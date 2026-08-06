@@ -11,6 +11,7 @@
  *   pnpm partners --taux=0.30 --code=x  change le taux d'un partenaire
  */
 
+import { DEFAULT_COMMISSION_RATE } from '../lib/partners';
 import { serviceClient } from '../lib/supabase/service';
 
 function arg(name: string): string | null {
@@ -48,6 +49,7 @@ async function main(): Promise<void> {
     const { data, error } = await sb.rpc('create_partner_code', {
       p_code: code,
       p_label: label,
+      p_commission_rate: DEFAULT_COMMISSION_RATE,
     });
 
     if (error) {

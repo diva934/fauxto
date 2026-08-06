@@ -37,6 +37,20 @@ export const REF_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 /** Clé des métadonnées Stripe portant le code partenaire. */
 export const CHECKOUT_REF_KEY = 'fauxto_ref';
 
+/**
+ * Part du montant encaissé reversée au partenaire.
+ *
+ * Source de vérité UNIQUE, côté application et non côté base. La colonne
+ * `partners.commission_rate` porte encore un `default` SQL, mais on ne s'y fie
+ * pas : changer un défaut en base demanderait une migration à chaque
+ * renégociation, et le taux affiché sur `/partenaire` finirait par diverger de
+ * celui réellement appliqué. Le taux est donc écrit explicitement à la
+ * création, ici et dans `pnpm partners`.
+ *
+ * Reste réglable par partenaire : `pnpm partners --code=x --taux=0.50`.
+ */
+export const DEFAULT_COMMISSION_RATE = 0.4;
+
 /** Forme acceptée par la contrainte SQL. */
 const CODE_PATTERN = /^[a-z0-9]{4,24}$/;
 
@@ -117,6 +131,21 @@ export async function joinPartner(
 
     const row = Array.isArray(data) ? data[0] : null;
     if (row?.code) {
+      // Le taux est posé ICI et non laissé au `default` SQL : sinon une
+      // inscription en ligne repartirait sur l'ancienne valeur en base pendant
+      // que `/partenaire` en annonce une autre.
+      if (row.created) {
+        const { error: rateError } = await supabase
+          .from('partners')
+          .update({ commission_rate: DEFAULT_COMMISSION_RATE })
+          .eq('code', row.code);
+
+        // Échec sans gravité : le partenaire existe, seul son taux est à
+        // rattraper à la main. Le perdre ici serait bien pire.
+        if (rateError) {
+          console.error('[partenaire] taux non appliqué :', rateError.message);
+        }
+      }
       return { ok: true, code: row.code, created: row.created };
     }
     // `code` nul = collision. On retente avec un autre suffixe.

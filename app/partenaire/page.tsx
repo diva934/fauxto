@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { SignInForm } from '@/components/account/SignInForm';
 import { JoinPartner } from '@/components/partner/JoinPartner';
 import { serverEnv } from '@/lib/env';
-import { formatEuros, getPartnerStats } from '@/lib/partners';
+import { DEFAULT_COMMISSION_RATE, formatEuros, getPartnerStats } from '@/lib/partners';
 import { currentUser } from '@/lib/supabase/server';
 import { BRAND } from '@/lib/utils';
 
@@ -84,7 +84,11 @@ export default async function PartenairePage() {
                 jours, même si elle paie plus tard.
               </li>
               <li>
-                4. Tu touches <strong className="text-text">20 %</strong> de
+                4. Tu touches{' '}
+                <strong className="text-text">
+                  {Math.round(DEFAULT_COMMISSION_RATE * 100)} %
+                </strong>{' '}
+                de
                 chaque paiement qu’elle fait.
               </li>
             </ol>
