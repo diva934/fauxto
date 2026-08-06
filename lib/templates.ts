@@ -62,7 +62,7 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     descriptionFr:
       "Ajoute une belle rayure et un pare-chocs cabossé sur la voiture de ton pote. Le classique qui déclenche un appel en moins de deux minutes.",
     prompt:
-      'Add a realistic large dent and deep paint scratches to the car in this photo. Keep everything else identical. Photorealistic, natural daylight, amateur smartphone photo quality.',
+      'Show this exact car after a serious side collision. ALL of the following must be clearly visible: a deep gouge running along the full length of the side panels, cutting through the paint down to bare grey metal and primer; the front wing and the door panel crumpled and buckled inward so the panel gaps no longer line up; the front bumper corner cracked and pulled away from the body; scattered paint flakes and scuff marks around the impact zone. The damage must be obvious at a glance from ten metres away, not a light scuff or a surface scratch. Keep the same car, same colour, same position, same angle, same background, same lighting and shadows. No people, no other vehicles, no blood. Photorealistic amateur smartphone photo taken in natural daylight.',
     aspectRatio: '4:5',
     model: 'flash',
     thumbnailBefore: '/samples/voiture-rayee-avant.jpg',
