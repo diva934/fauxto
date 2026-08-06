@@ -83,7 +83,8 @@ export type Report = {
 
 export type Partner = {
   id: string;
-  user_id: string;
+  /** `null` pour un code créé par l'exploitant, que personne ne consulte encore. */
+  user_id: string | null;
   code: string;
   display_name: string | null;
   commission_rate: number;
@@ -158,7 +159,7 @@ export type Database = {
       };
       partners: {
         Row: Partner;
-        Insert: Partial<Partner> & { user_id: string; code: string };
+        Insert: Partial<Partner> & { code: string };
         Update: Partial<Partner>;
         Relationships: [];
       };
@@ -229,6 +230,14 @@ export type Database = {
         Returns: boolean;
       };
       partner_stats: { Args: { p_user_id: string }; Returns: PartnerStats[] };
+      create_partner_code: {
+        Args: { p_code: string; p_label: string; p_commission_rate?: number };
+        Returns: { partner_id: string; code: string; created: boolean }[];
+      };
+      claim_partner_code: {
+        Args: { p_code: string; p_user_id: string };
+        Returns: boolean;
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

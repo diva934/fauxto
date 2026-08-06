@@ -6,7 +6,8 @@
  * qui a été recruté, qui rapporte, et surtout combien vous devez.
  *
  * Usage :
- *   pnpm partners                     tous les partenaires, triés par commission
+ *   pnpm partners                       tous les partenaires, triés par commission
+ *   pnpm partners --new=lea:Léa Dupont  crée le code « lea », étiqueté « Léa Dupont »
  *   pnpm partners --taux=0.30 --code=x  change le taux d'un partenaire
  */
 
@@ -25,6 +26,45 @@ function euros(cents: number): string {
 
 async function main(): Promise<void> {
   const sb = serviceClient();
+
+  // ── Création d'un code, si demandée ───────────────────────────────────────
+  // Format `code:Étiquette`. Le code est CHOISI et non dérivé : un influenceur
+  // le lit à voix haute dans une vidéo, et le spectateur le tape de mémoire.
+  const nouveau = arg('new');
+  if (nouveau) {
+    const [rawCode, ...rest] = nouveau.split(':');
+    const code = rawCode.trim().toLowerCase();
+    const label = rest.join(':').trim() || code;
+
+    if (!/^[a-z0-9]{4,24}$/.test(code)) {
+      console.log(
+        `\n⚠️  « ${code} » n'est pas un code valide.` +
+          `\n   Lettres minuscules et chiffres uniquement, 4 à 24 caractères.` +
+          `\n   Pas d'accent ni de tiret : ça se tape mal depuis un téléphone.\n`,
+      );
+      process.exit(1);
+    }
+
+    const { data, error } = await sb.rpc('create_partner_code', {
+      p_code: code,
+      p_label: label,
+    });
+
+    if (error) {
+      console.log(`\n❌ ${error.message}`);
+      if (error.message.includes('create_partner_code')) {
+        console.log('   La migration 0003_partner_codes_sans_compte.sql a-t-elle été appliquée ?');
+      }
+      process.exit(1);
+    }
+
+    const row = Array.isArray(data) ? data[0] : null;
+    const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://fauxto.online';
+    console.log(
+      `\n${row?.created ? '✅ Code créé' : 'ℹ️  Code déjà existant'} : ${code} (${label})` +
+        `\n🔗 ${site}/r/${code}\n`,
+    );
+  }
 
   // ── Changement de taux, si demandé ────────────────────────────────────────
   const newRate = arg('taux');
@@ -132,8 +172,8 @@ async function main(): Promise<void> {
       `(avant frais Stripe et TVA)\n`,
   );
 
-  console.log('Pour changer un taux :');
-  console.log('   pnpm partners --code=xxx --taux=0.30\n');
+  console.log('Créer un code   :  pnpm partners --new=lea:Léa Dupont');
+  console.log('Changer un taux :  pnpm partners --code=lea --taux=0.30\n');
 }
 
 void main();

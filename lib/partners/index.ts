@@ -170,6 +170,75 @@ export async function attributeConversion(input: {
   return data === true;
 }
 
+/** Une ligne du tableau de bord exploitant. */
+export type OwnerPartnerRow = {
+  code: string;
+  label: string;
+  commissionRate: number;
+  clicks: number;
+  conversions: number;
+  revenueCents: number;
+  commissionCents: number;
+  /** Faux tant que personne n'a réclamé le code depuis un compte. */
+  claimed: boolean;
+};
+
+/**
+ * Vue d'ensemble, pour l'exploitant uniquement.
+ *
+ * `partner_stats` ne sert qu'un partenaire à la fois, et ne couvre pas les
+ * codes sans compte — qui sont précisément ceux distribués aux influenceurs.
+ * On agrège donc ici, avec la clé de service, et l'appelant DOIT avoir vérifié
+ * que le demandeur est l'exploitant.
+ */
+export async function getAllPartnerStats(): Promise<OwnerPartnerRow[] | null> {
+  const supabase = optionalServiceClient();
+  if (!supabase) return null;
+
+  const [{ data: partners, error }, { data: clicks }, { data: conversions }] =
+    await Promise.all([
+      supabase.from('partners').select('id, code, display_name, commission_rate, user_id'),
+      supabase.from('partner_clicks').select('partner_id'),
+      supabase.from('partner_conversions').select('partner_id, amount_cents, commission_cents'),
+    ]);
+
+  if (error) {
+    console.error('[partenaire] lecture globale :', error.message);
+    return null;
+  }
+  if (!partners) return [];
+
+  const clicksBy = new Map<string, number>();
+  for (const row of clicks ?? []) {
+    clicksBy.set(row.partner_id, (clicksBy.get(row.partner_id) ?? 0) + 1);
+  }
+
+  const salesBy = new Map<string, { n: number; revenue: number; commission: number }>();
+  for (const row of conversions ?? []) {
+    const cur = salesBy.get(row.partner_id) ?? { n: 0, revenue: 0, commission: 0 };
+    cur.n += 1;
+    cur.revenue += row.amount_cents;
+    cur.commission += row.commission_cents;
+    salesBy.set(row.partner_id, cur);
+  }
+
+  return partners
+    .map((p) => {
+      const sales = salesBy.get(p.id) ?? { n: 0, revenue: 0, commission: 0 };
+      return {
+        code: p.code,
+        label: p.display_name ?? p.code,
+        commissionRate: p.commission_rate,
+        clicks: clicksBy.get(p.id) ?? 0,
+        conversions: sales.n,
+        revenueCents: sales.revenue,
+        commissionCents: sales.commission,
+        claimed: p.user_id !== null,
+      };
+    })
+    .sort((a, b) => b.revenueCents - a.revenueCents || b.clicks - a.clicks);
+}
+
 /** Formate des centimes en euros, pour l'affichage. */
 export function formatEuros(cents: number): string {
   return new Intl.NumberFormat('fr-FR', {
