@@ -190,9 +190,9 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     descriptionFr:
       "Remplace le décor par un balcon de gratte-ciel à Dubaï au coucher du soleil, en gardant la personne parfaitement intacte. Idéal pour un « désolé, j'ai pris l'avion ce matin ».",
     prompt:
-      'Replace only the background with the view from a high-rise apartment balcony over the Dubai skyline at sunset, glass balustrade in the foreground, tall towers and warm golden light. Keep the person perfectly intact with matched warm lighting and edge blending. Photorealistic.',
+      "Replace only the background and surrounding environment with a high-rise apartment balcony overlooking the Dubai skyline at sunset: tall illuminated towers in the distance, warm golden-orange sky. CRITICAL: do not move the camera, do not change the framing, crop or distance of the shot — the person keeps the exact same size, position and angle in the frame, only what is behind and around them changes. Place a glass balustrade in front of the person at roughly waist height, without overlapping their face or chest. Relight the person to match a low golden-hour sun coming from one side: warm orange-gold highlights on the side of the face, hair and clothing facing the light, a softer cooler shadow on the opposite side, and a soft shadow cast on the balcony floor in the direction away from the sun, consistent with the new setting. Keep the person's face, expression, hair, clothing and pose perfectly intact — only the lighting temperature and shadow direction adapt to the new scene. Photorealistic.",
     aspectRatio: '4:5',
-    model: 'flash',
+    model: 'pro',
     thumbnailBefore: '/samples/dubai-avant.jpg',
     thumbnailAfter: '/samples/dubai-apres.jpg',
     emoji: '🌇',
