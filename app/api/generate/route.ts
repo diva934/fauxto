@@ -9,6 +9,7 @@ import {
 import { getImageEngine, resolveModelId } from '@/lib/image-engine';
 import { EngineError } from '@/lib/image-engine/types';
 import { moderateSourceImage } from '@/lib/moderation';
+import { composeFreePrompt, moderatePrompt, MAX_PROMPT_LENGTH } from '@/lib/moderation/prompt';
 import { finalizeImage } from '@/lib/postprocess';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { currentUser } from '@/lib/supabase/server';
@@ -38,6 +39,8 @@ interface ParsedRequest {
   photo: Buffer;
   mimeType: string;
   templateId: string;
+  /** Consigne libre, présente uniquement pour le prank « À toi de jouer ». */
+  userPrompt?: string;
   overlayInputs: Record<number, string>;
 }
 
@@ -99,6 +102,12 @@ async function parseRequest(request: NextRequest): Promise<ParseResult> {
     }
   }
 
+  // Coupé à la source : la modération refuse au-delà, mais on évite de
+  // transporter un texte arbitrairement long jusque-là.
+  const rawPrompt = form.get('userPrompt');
+  const userPrompt =
+    typeof rawPrompt === 'string' ? rawPrompt.slice(0, MAX_PROMPT_LENGTH + 1) : undefined;
+
   return {
     ok: true,
     value: {
@@ -106,6 +115,7 @@ async function parseRequest(request: NextRequest): Promise<ParseResult> {
       mimeType: file.type,
       templateId,
       overlayInputs,
+      userPrompt,
     },
   };
 }
@@ -242,12 +252,42 @@ export async function POST(request: NextRequest): Promise<Response> {
           return;
         }
 
+        // ── Modération du texte, pour le prank libre uniquement ───────────
+        //
+        // La photo vient d'être vérifiée ; sur ce template, l'utilisateur
+        // dicte AUSSI ce que le modèle doit produire. Sans ce second contrôle,
+        // le produit devient un générateur d'images sans garde-fou, accessible
+        // pour 1 €, sous la responsabilité éditoriale de l'éditeur et avec sa
+        // clé d'API.
+        //
+        // Placé APRÈS la modération de l'image : les deux sont indépendantes,
+        // et on ne veut pas payer l'analyse du texte pour une photo qui va de
+        // toute façon être refusée.
+        let effectivePrompt = template.prompt;
+
+        if (template.freePrompt) {
+          const instruction = parsed.value.userPrompt ?? '';
+          const verdict = await moderatePrompt(instruction);
+
+          if (!verdict.allowed) {
+            await fail(
+              'moderation_refused',
+              verdict.messageFr,
+              `modération du texte: ${verdict.reason}`,
+              `prompt_${verdict.reason}`,
+            );
+            return;
+          }
+
+          effectivePrompt = composeFreePrompt(verdict.cleaned);
+        }
+
         // ── Génération ────────────────────────────────────────────────────
         stage('generation');
         const edited = await getImageEngine().edit({
           sourceImage: parsed.value.photo,
           sourceMimeType: parsed.value.mimeType,
-          prompt: template.prompt,
+          prompt: effectivePrompt,
           aspectRatio: template.aspectRatio,
           modelId: resolveModelId(template.model),
         });

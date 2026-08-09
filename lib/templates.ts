@@ -51,6 +51,21 @@ export interface PrankTemplate {
   /** Emoji utilisé comme repère visuel dans l'interface. */
   emoji: string;
   textOverlays?: TextOverlaySlot[];
+  /**
+   * Présent uniquement sur le prank libre : l'utilisateur écrit lui-même la
+   * consigne envoyée au modèle.
+   *
+   * Sa seule présence change la nature du template — `prompt` n'est alors
+   * qu'un repli, et la consigne réelle passe par `composeFreePrompt` APRÈS
+   * être passée par `moderatePrompt`. Un texte utilisateur ne va jamais
+   * directement au modèle d'image.
+   */
+  freePrompt?: {
+    labelFr: string;
+    placeholderFr: string;
+    /** Doit rester aligné sur `MAX_PROMPT_LENGTH` de la modération. */
+    maxLength: number;
+  };
 }
 
 export const TEMPLATES: readonly PrankTemplate[] = [
@@ -288,6 +303,33 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     thumbnailBefore: '/samples/voiture-reve-avant.jpg',
     thumbnailAfter: '/samples/voiture-reve-apres.jpg',
     emoji: '🏎️',
+  },
+  {
+    id: 'libre',
+    slug: 'prank-libre',
+    nameFr: 'À toi de jouer',
+    taglineFr: 'Ta photo, ton idée',
+    descriptionFr:
+      'Envoie une photo, écris ce que tu veux changer, et l’IA le fait. Les onze autres pranks sont calibrés ; celui-ci ne l’est pas — c’est le prix de la liberté.',
+    // `prompt` n'est qu'un repli, jamais utilisé en pratique : la consigne
+    // réelle vient de l'utilisateur et passe par `composeFreePrompt`. Il sert
+    // de garde-fou si `freePrompt` venait à disparaître par erreur.
+    prompt:
+      'Make a subtle, harmless and photorealistic change to this photo. Keep the person, framing, background and lighting identical.',
+    freePrompt: {
+      labelFr: 'Que veux-tu changer ?',
+      placeholderFr: 'ex : remplace ma voiture par une Ferrari rouge',
+      // Aligné sur MAX_PROMPT_LENGTH dans lib/moderation/prompt.ts.
+      maxLength: 300,
+    },
+    aspectRatio: '4:5',
+    model: 'flash',
+    // Vignettes provisoires, empruntées à un autre prank : un avant/après
+    // précis serait mensonger pour un template dont le résultat dépend de la
+    // demande. À remplacer par un visuel qui montre l'idée, pas un exemple.
+    thumbnailBefore: '/samples/lion-salon-avant.jpg',
+    thumbnailAfter: '/samples/lion-salon-apres.jpg',
+    emoji: '✨',
   },
 ] as const;
 

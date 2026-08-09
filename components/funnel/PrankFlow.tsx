@@ -64,6 +64,8 @@ export function PrankFlow({
   const [compressing, setCompressing] = useState(false);
   const [consent, setConsent] = useState(false);
   const [overlayInputs, setOverlayInputs] = useState<Record<number, string>>({});
+  /** Consigne saisie par l'utilisateur, prank libre uniquement. */
+  const [userPrompt, setUserPrompt] = useState('');
 
   const [stage, setStage] = useState<GenerationStage | null>(null);
   const [progress, setProgress] = useState(0);
@@ -181,6 +183,9 @@ export function PrankFlow({
       for (const [index, value] of Object.entries(overlayInputs)) {
         if (value.trim()) form.append(`overlay[${index}]`, value);
       }
+      if (template.freePrompt && userPrompt.trim()) {
+        form.append('userPrompt', userPrompt.trim());
+      }
 
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -252,7 +257,7 @@ export function PrankFlow({
     } finally {
       clearTimeout(timeout);
     }
-  }, [file, consent, overlayInputs, template.id, isSignedIn, credits, detour]);
+  }, [file, consent, overlayInputs, userPrompt, template, isSignedIn, credits, detour]);
 
   const restart = useCallback((): void => {
     setPhase('upload');
@@ -343,7 +348,10 @@ export function PrankFlow({
   }
 
   // ── Upload ───────────────────────────────────────────────────────────────
-  const canGenerate = Boolean(file) && consent && !compressing;
+  // Sur le prank libre, une consigne vide n'a aucun sens : le bouton reste
+  // inerte plutot que de lancer une generation qui sera refusee.
+  const promptReady = !template.freePrompt || userPrompt.trim().length > 0;
+  const canGenerate = Boolean(file) && consent && !compressing && promptReady;
 
   return (
     <div className="flex flex-1 flex-col px-5 pb-4">
@@ -452,6 +460,31 @@ export function PrankFlow({
             <p className="text-xs text-muted">
               Le texte est ajouté par nos serveurs, pas par l’IA — l’orthographe
               est donc garantie.
+            </p>
+          </div>
+        ) : null}
+
+        {/* Consigne libre — prank « À toi de jouer » uniquement */}
+        {file && template.freePrompt ? (
+          <div className="mx-auto mt-4 w-full max-w-sm">
+            <label className="block">
+              <span className="text-sm font-medium text-muted">
+                {template.freePrompt.labelFr}
+              </span>
+              <textarea
+                rows={3}
+                maxLength={template.freePrompt.maxLength}
+                placeholder={template.freePrompt.placeholderFr}
+                value={userPrompt}
+                onChange={(event) => setUserPrompt(event.target.value)}
+                className="mt-1 w-full resize-none rounded-card border border-line bg-surface p-4 text-base text-text placeholder:text-muted/60 focus:border-accent focus:outline-none"
+              />
+            </label>
+            <p className="mt-1 flex justify-between text-xs text-muted">
+              <span>Une seule modification, décrite simplement.</span>
+              <span className="tabular-nums">
+                {userPrompt.length}/{template.freePrompt.maxLength}
+              </span>
             </p>
           </div>
         ) : null}
