@@ -135,7 +135,17 @@ export default function HomePage() {
                * plus large pour une hauteur de ligne quasi identique — l'écart
                * se réduit à la gouttière, quelques pixels.
                */
-              className={template.freePrompt ? 'col-span-2 aspect-8/5' : undefined}
+              /**
+               * `[&_img]:object-top` : la vignette est carrée, la tuile est en
+               * 8/5. Un recadrage centré ampute le tiers haut de l'image —
+               * c'est-à-dire la fenêtre, qui est tout le sujet. On ancre donc
+               * en haut : ce qu'on perd en bas n'est que le tapis.
+               */
+              className={
+                template.freePrompt
+                  ? 'col-span-2 aspect-8/5 [&_img]:object-top'
+                  : undefined
+              }
             />
           ))}
         </div>

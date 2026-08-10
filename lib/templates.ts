@@ -324,11 +324,14 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     },
     aspectRatio: '4:5',
     model: 'flash',
-    // Vignettes provisoires, empruntées à un autre prank : un avant/après
-    // précis serait mensonger pour un template dont le résultat dépend de la
-    // demande. À remplacer par un visuel qui montre l'idée, pas un exemple.
-    thumbnailBefore: '/samples/lion-salon-avant.jpg',
-    thumbnailAfter: '/samples/lion-salon-apres.jpg',
+    // La vignette montre le PRINCIPE, pas un prank du catalogue : une pièce
+    // ordinaire dont seule la fenêtre change de monde. Un exemple précis aurait
+    // laissé croire que la case ne fait que ça, alors que le résultat dépend
+    // entièrement de la demande. Les deux images sont des sorties réelles du
+    // produit, enchaînées depuis la même photo — d'où la pièce strictement
+    // identique d'une image à l'autre, qui est la signature du service.
+    thumbnailBefore: '/samples/personnalise-avant.jpg',
+    thumbnailAfter: '/samples/personnalise-apres.jpg',
     emoji: '✨',
   },
 ] as const;
