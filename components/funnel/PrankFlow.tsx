@@ -356,6 +356,38 @@ export function PrankFlow({
   return (
     <div className="flex flex-1 flex-col px-5 pb-4">
       <div className="flex-1">
+        {/* Consigne libre — AU-DESSUS de la photo, et pas en dessous.
+            Sur ce prank c'est la consigne qui porte l'idée : la photo n'est
+            qu'une matière première. L'ordre de lecture suit donc l'ordre de
+            décision — on sait ce qu'on veut avant de choisir sur quoi. */}
+        {/* Visible SANS attendre la photo, contrairement aux champs de texte
+            incrusté. Sur ce prank, la consigne EST la fonctionnalité : la
+            cacher derrière l'envoi d'une photo donne l'impression qu'elle
+            n'existe pas, et le visiteur repart en le croyant. */}
+        {template.freePrompt ? (
+          <div className="mx-auto mb-4 w-full max-w-sm">
+            <label className="block">
+              <span className="text-sm font-medium text-muted">
+                {template.freePrompt.labelFr}
+              </span>
+              <textarea
+                rows={3}
+                maxLength={template.freePrompt.maxLength}
+                placeholder={template.freePrompt.placeholderFr}
+                value={userPrompt}
+                onChange={(event) => setUserPrompt(event.target.value)}
+                className="mt-1 w-full resize-none rounded-card border border-line bg-surface p-4 text-base text-text placeholder:text-muted/60 focus:border-accent focus:outline-none"
+              />
+            </label>
+            <p className="mt-1 flex justify-between text-xs text-muted">
+              <span>Une seule modification, décrite simplement.</span>
+              <span className="tabular-nums">
+                {userPrompt.length}/{template.freePrompt.maxLength}
+              </span>
+            </p>
+          </div>
+        ) : null}
+
         {/* Zone de sélection / aperçu */}
         {previewUrl ? (
           <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-card bg-surface">
@@ -379,11 +411,11 @@ export function PrankFlow({
               type="button"
               onClick={() => cameraInputRef.current?.click()}
               disabled={compressing}
-              className="flex aspect-4/5 w-full flex-col items-center justify-center gap-3 rounded-card border-2 border-dashed border-line bg-surface text-muted transition-colors hover:border-accent/50 hover:text-text disabled:opacity-50"
+              className="flex h-36 w-full flex-col items-center justify-center gap-1.5 rounded-card border-2 border-dashed border-line bg-surface text-muted transition-colors hover:border-accent/50 hover:text-text disabled:opacity-50"
             >
-              <Camera className="size-10" aria-hidden />
-              <span className="text-lg font-semibold">Prendre une photo</span>
-              <span className="text-sm">ou choisir dans la galerie ↓</span>
+              <Camera className="size-7" aria-hidden />
+              <span className="text-base font-semibold">Prendre une photo</span>
+              <span className="text-xs">ou choisir dans la galerie ↓</span>
             </button>
 
             <Button
@@ -460,35 +492,6 @@ export function PrankFlow({
             <p className="text-xs text-muted">
               Le texte est ajouté par nos serveurs, pas par l’IA — l’orthographe
               est donc garantie.
-            </p>
-          </div>
-        ) : null}
-
-        {/* Consigne libre — prank « À toi de jouer » uniquement */}
-        {/* Visible SANS attendre la photo, contrairement aux champs de texte
-            incrusté. Sur ce prank, la consigne EST la fonctionnalité : la
-            cacher derrière l'envoi d'une photo donne l'impression qu'elle
-            n'existe pas, et le visiteur repart en le croyant. */}
-        {template.freePrompt ? (
-          <div className="mx-auto mt-4 w-full max-w-sm">
-            <label className="block">
-              <span className="text-sm font-medium text-muted">
-                {template.freePrompt.labelFr}
-              </span>
-              <textarea
-                rows={3}
-                maxLength={template.freePrompt.maxLength}
-                placeholder={template.freePrompt.placeholderFr}
-                value={userPrompt}
-                onChange={(event) => setUserPrompt(event.target.value)}
-                className="mt-1 w-full resize-none rounded-card border border-line bg-surface p-4 text-base text-text placeholder:text-muted/60 focus:border-accent focus:outline-none"
-              />
-            </label>
-            <p className="mt-1 flex justify-between text-xs text-muted">
-              <span>Une seule modification, décrite simplement.</span>
-              <span className="tabular-nums">
-                {userPrompt.length}/{template.freePrompt.maxLength}
-              </span>
             </p>
           </div>
         ) : null}
