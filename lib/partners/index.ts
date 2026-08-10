@@ -51,8 +51,15 @@ export const CHECKOUT_REF_KEY = 'fauxto_ref';
  */
 export const DEFAULT_COMMISSION_RATE = 0.4;
 
-/** Forme acceptée par la contrainte SQL. */
-const CODE_PATTERN = /^[a-z0-9]{4,24}$/;
+/**
+ * Forme acceptée par la contrainte SQL. Doit rester synchronisée avec elle.
+ *
+ * Le point et le tiret bas sont admis parce qu'un code reprend le pseudo TikTok
+ * du créateur — `leo.ktn` — et que le spectateur le tape tel qu'il l'a lu sous
+ * la vidéo. Premier et dernier caractères alphanumériques : un code qui
+ * commence ou finit par un point se confond avec une extension de fichier.
+ */
+const CODE_PATTERN = /^[a-z0-9][a-z0-9._]{2,22}[a-z0-9]$/;
 
 export function isValidCode(code: string): boolean {
   return CODE_PATTERN.test(code);

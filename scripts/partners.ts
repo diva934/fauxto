@@ -11,7 +11,7 @@
  *   pnpm partners --taux=0.30 --code=x  change le taux d'un partenaire
  */
 
-import { DEFAULT_COMMISSION_RATE } from '../lib/partners';
+import { DEFAULT_COMMISSION_RATE, isValidCode } from '../lib/partners';
 import { serviceClient } from '../lib/supabase/service';
 
 function arg(name: string): string | null {
@@ -37,10 +37,12 @@ async function main(): Promise<void> {
     const code = rawCode.trim().toLowerCase();
     const label = rest.join(':').trim() || code;
 
-    if (!/^[a-z0-9]{4,24}$/.test(code)) {
+    // Même validation que l'application : une divergence ici créerait des codes
+    // que les routes refuseraient ensuite de reconnaître.
+    if (!isValidCode(code)) {
       console.log(
         `\n⚠️  « ${code} » n'est pas un code valide.` +
-          `\n   Lettres minuscules et chiffres uniquement, 4 à 24 caractères.` +
+          `\n   Minuscules, chiffres, point et tiret bas, 4 à 24 caractères, commençant et finissant par une lettre ou un chiffre.` +
           `\n   Pas d'accent ni de tiret : ça se tape mal depuis un téléphone.\n`,
       );
       process.exit(1);
