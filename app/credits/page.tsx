@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SignInForm } from '@/components/account/SignInForm';
 import { PackPicker } from '@/components/funnel/PackPicker';
+import { ReferralCodeField } from '@/components/partner/ReferralCodeField';
 import { getCredits } from '@/lib/credits';
 import { currentUser } from '@/lib/supabase/server';
 
@@ -95,6 +96,14 @@ export default async function CreditsPage({
           </span>
         </li>
       </ul>
+
+      {/* Saisie du code créateur — ICI et pas ailleurs.
+          Le cookie d'attribution doit être posé AVANT l'ouverture de la session
+          Stripe : c'est à ce moment que le code est recopié dans les
+          métadonnées du paiement. Le placer après serait sans effet. */}
+      <div className="mt-6">
+        <ReferralCodeField />
+      </div>
 
       <p className="mt-4 pb-6 text-center text-xs leading-relaxed text-muted">
         Les métadonnées de provenance restent présentes sur toutes les images, y
