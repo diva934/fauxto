@@ -330,8 +330,8 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     // entièrement de la demande. Les deux images sont des sorties réelles du
     // produit, enchaînées depuis la même photo — d'où la pièce strictement
     // identique d'une image à l'autre, qui est la signature du service.
-    thumbnailBefore: '/samples/personnalise-avant.jpg',
-    thumbnailAfter: '/samples/personnalise-apres.jpg',
+    thumbnailBefore: '/samples/personnalise-cuisine-avant.jpg',
+    thumbnailAfter: '/samples/personnalise-cuisine-apres.jpg',
     emoji: '✨',
   },
 ] as const;

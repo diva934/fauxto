@@ -136,14 +136,18 @@ export default function HomePage() {
                * se réduit à la gouttière, quelques pixels.
                */
               /**
-               * `[&_img]:object-top` : la vignette est carrée, la tuile est en
-               * 8/5. Un recadrage centré ampute le tiers haut de l'image —
-               * c'est-à-dire la fenêtre, qui est tout le sujet. On ancre donc
-               * en haut : ce qu'on perd en bas n'est que le tapis.
+               * La vignette est en portrait, la tuile en 8/5 : seuls 47 % de la
+               * hauteur restent visibles. Le point d'ancrage n'est donc pas un
+               * détail — il décide de ce qu'on voit.
+               *
+               * 35 % est mesuré, pas choisi au jugé : à 0 % le menton est
+               * coupé et le placard occupe le tiers haut ; à 45 % on perd le
+               * front. À 35 % le visage entier, la tasse et toute la fenêtre
+               * tiennent dans le cadre.
                */
               className={
                 template.freePrompt
-                  ? 'col-span-2 aspect-8/5 [&_img]:object-top'
+                  ? 'col-span-2 aspect-8/5 [&_img]:object-[50%_35%]'
                   : undefined
               }
             />
