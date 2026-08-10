@@ -465,7 +465,11 @@ export function PrankFlow({
         ) : null}
 
         {/* Consigne libre — prank « À toi de jouer » uniquement */}
-        {file && template.freePrompt ? (
+        {/* Visible SANS attendre la photo, contrairement aux champs de texte
+            incrusté. Sur ce prank, la consigne EST la fonctionnalité : la
+            cacher derrière l'envoi d'une photo donne l'impression qu'elle
+            n'existe pas, et le visiteur repart en le croyant. */}
+        {template.freePrompt ? (
           <div className="mx-auto mt-4 w-full max-w-sm">
             <label className="block">
               <span className="text-sm font-medium text-muted">
