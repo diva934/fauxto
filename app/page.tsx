@@ -27,6 +27,19 @@ import { TEMPLATES } from '@/lib/templates';
  * Aucune donnée n'étant plus lue en base, la page est entièrement statique.
  */
 
+/**
+ * Le prank libre en tête, parce qu'il occupe deux colonnes.
+ *
+ * La grille compte 13 emplacements (11 tuiles simples + 1 double) pour 2
+ * colonnes : il reste donc forcément un trou, où que la tuile large se trouve.
+ * En la plaçant en premier, le trou tombe en fin de grille — là où l'œil ne le
+ * lit pas comme un défaut. Au milieu, il ressemblerait à une image manquante.
+ */
+const orderedTemplates = [
+  ...TEMPLATES.filter((t) => t.freePrompt),
+  ...TEMPLATES.filter((t) => !t.freePrompt),
+];
+
 export default function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col">
@@ -107,12 +120,22 @@ export default function HomePage() {
           Les {TEMPLATES.length} pranks disponibles
         </h2>
         <div className="grid grid-cols-2 gap-2.5">
-          {TEMPLATES.map((template, index) => (
+          {orderedTemplates.map((template, index) => (
             <BeforeAfterTile
               key={template.id}
               template={template}
               priority={index < 2}
               delayMs={index * 340}
+              /**
+               * Le prank libre occupe les deux colonnes.
+               *
+               * `aspect-8/5` et non `aspect-4/5` : à largeur double, conserver
+               * le ratio des autres tuiles doublerait aussi la hauteur et
+               * casserait le rythme de la grille. 8/5 donne une tuile deux fois
+               * plus large pour une hauteur de ligne quasi identique — l'écart
+               * se réduit à la gouttière, quelques pixels.
+               */
+              className={template.freePrompt ? 'col-span-2 aspect-8/5' : undefined}
             />
           ))}
         </div>
