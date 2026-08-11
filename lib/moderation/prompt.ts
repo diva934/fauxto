@@ -61,7 +61,7 @@ const ANALYSIS_PROMPT = `You are a safety classifier for a photo-prank service. 
 Flag it if the instruction asks for any of:
 - sexual: nudity, sexual acts, sexualised bodies, underwear, "undress", lingerie
 - minor: anything involving children, teenagers, schools, or making someone look like a child
-- public_figure: a named celebrity, politician, athlete, influencer or any identifiable public person
+- public_figure: a REAL, IDENTIFIABLE person is designated — by name, by nickname, or by a description that can only match one individual ("the French president", "the man who founded Tesla"). Generic anonymous roles are NOT flagged: "a footballer", "a movie star", "a singer", "a police officer", "a man in a suit" are all ALLOWED, because no real person is designated and no one's likeness is used.
 - violence: injury, blood, wounds, corpses, weapons pointed at people, war, serious accident with casualties, illness, death
 - hate: racist, antisemitic, homophobic or otherwise degrading depictions; symbols of hate movements
 - deception: fake official documents, ID cards, passports, bank statements, invoices, medical results, police reports, arrest scenes, court documents, or anything designed to be used as false evidence

@@ -34,14 +34,31 @@ export type ModerationDecision =
     };
 
 /**
- * Seuil d'âge de sécurité.
+ * Seuil d'âge, aligné sur la majorité légale.
  *
- * On refuse en dessous de 25 ans estimés, pas 18. L'estimation d'âge par un
- * modèle a une marge d'erreur de plusieurs années, et le brief est explicite :
- * « En cas de doute, refuse. Aucune exception. » Une marge de 7 ans absorbe
- * l'erreur du modèle dans le sens qui protège.
+ * DÉCISION DE L'EXPLOITANT, prise le 11 août 2026 et documentée ici parce
+ * qu'elle engage sa responsabilité, pas la mienne.
+ *
+ * Le seuil était à 25 ans : une marge de 7 ans qui absorbait l'erreur
+ * d'estimation du modèle dans le sens qui protège. Mesuré en production, il
+ * refusait 4 générations sur 10 pour « mineur », sur une audience TikTok
+ * majoritairement composée de 18-24 ans — donc des adultes.
+ *
+ * RÉSERVE MAINTENUE : à 18, il n'y a plus AUCUNE marge. L'estimation d'âge
+ * d'un modèle se trompe de plusieurs années ; un mineur de 16 ans estimé à 18
+ * franchit désormais ce test.
+ *
+ * CE QUI PROTÈGE ENCORE, et qui devient la barrière principale :
+ *   · `minorLikelihood` à `medium` ou `high` refuse, indépendamment de l'âge
+ *     estimé — c'est un signal distinct, pas dérivé du nombre ;
+ *   · un âge que le modèle ne sait pas estimer refuse aussi.
+ *
+ * Vérifié après le changement : une photo estimée à 16 ans reste refusée par
+ * `minorLikelihood: high`. Si ce comportement changeait, le produit n'aurait
+ * plus aucune protection sur les mineurs — à retester à chaque changement de
+ * modèle de modération.
  */
-const SAFE_AGE_THRESHOLD = 25;
+const SAFE_AGE_THRESHOLD = 18;
 
 const MESSAGES: Record<ModerationFlag, string> = {
   minor:
