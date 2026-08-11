@@ -121,188 +121,124 @@ export const TEMPLATES: readonly PrankTemplate[] = [
     emoji: '💇',
   },
   {
-    id: 'dans-40-ans',
-    slug: 'dans-40-ans',
-    nameFr: 'Dans 40 ans',
-    taglineFr: 'Un aperçu du futur',
+    id: 'telephone-casse',
+    slug: 'telephone-casse',
+    nameFr: 'Le téléphone cassé',
+    taglineFr: 'Son écran ne s’en remettra pas',
     descriptionFr:
-      'Vieillis ton pote de quarante ans : cheveux gris, rides, peau marquée. Même pose, même décor, juste quatre décennies de plus.',
+      'Fracasse l’écran de son téléphone. Le classique absolu : tout le monde a déjà vécu la seconde de panique en voyant son écran en miettes.',
     prompt:
-      'Age the person in this photo by 40 years realistically: grey hair, natural wrinkles, aged skin texture. Keep the same pose, clothing and background. Photorealistic portrait.',
+      'Show the phone in this photo with a badly shattered screen. ALL of the following must be visible: a dense spiderweb of cracks radiating from one corner, several small glass splinters chipped away and missing along an edge, and thin bright glitch lines across the display. The damage must be obvious at a glance, not a hairline crack. Keep the phone in the exact same position and angle, and keep everything else in the photo identical — same surroundings, same lighting, same shadows. Photorealistic amateur smartphone photo.',
     aspectRatio: '4:5',
     model: 'flash',
-    thumbnailBefore: '/samples/dans-40-ans-avant.jpg',
-    thumbnailAfter: '/samples/dans-40-ans-apres.jpg',
-    emoji: '👴',
+    thumbnailBefore: '/samples/telephone-casse-avant.jpg',
+    thumbnailAfter: '/samples/telephone-casse-apres.jpg',
+    emoji: '📱',
   },
   {
-    id: 'bodybuilder',
-    slug: 'bodybuilder',
-    nameFr: 'Bodybuilder',
-    taglineFr: 'Six mois de salle en une seconde',
+    id: 'pneu-creve',
+    slug: 'pneu-creve',
+    nameFr: 'Le pneu crevé',
+    taglineFr: 'Il va rentrer à pied',
     descriptionFr:
-      "Colle une musculature de compétition sur le corps de ton pote, en gardant son visage intact. L'écart entre les deux fait tout le sel.",
+      'Dégonfle complètement un pneu de sa voiture. Moins violent que la rayure, mais tout aussi énervant — et beaucoup plus crédible sur un parking.',
     prompt:
-      "Make the person's body massively muscular, like a competitive bodybuilder: hugely developed shoulders, chest, arms, forearms and neck, so the change is unmistakable at a glance. CRITICAL: the person keeps the exact same garment, and that garment stays fully opaque fabric — stretched tight over the new bulk with realistic tension folds and strained seams. Never show skin, abdominal muscles or chest definition through the cloth; the fabric is never transparent and muscles are never painted onto it. Keep the face, head size, hands, background and lighting unchanged. Photorealistic amateur smartphone photo.",
+      'The front tyre of this car has BURST. ALL of the following must be visible: the rubber is torn wide open with ragged black strips peeling away from the rim, chunks of shredded tread hanging loose and lying on the tarmac beside the wheel, and the bare metal rim exposed through the hole where the rubber has gone. What is left of the tyre is collapsed flat against the road. A round, intact tyre is WRONG. Keep the same car, same colour, same parking spot, same camera angle, same background, same lighting and shadows. No people, no other vehicles. Photorealistic amateur smartphone photo.',
     aspectRatio: '4:5',
     model: 'flash',
-    thumbnailBefore: '/samples/bodybuilder-avant.jpg',
-    thumbnailAfter: '/samples/bodybuilder-apres.jpg',
-    emoji: '💪',
+    thumbnailBefore: '/samples/pneu-creve-avant.jpg',
+    thumbnailAfter: '/samples/pneu-creve-apres.jpg',
+    emoji: '🛞',
   },
   {
-    id: 'gagnant-loto',
-    slug: 'gagnant-du-loto',
-    nameFr: 'Gagnant du loto',
-    taglineFr: 'Le chèque géant',
+    id: 'tele-cassee',
+    slug: 'television-cassee',
+    nameFr: 'La télé cassée',
+    taglineFr: 'Fin de la soirée foot',
     descriptionFr:
-      "Met un chèque géant entre les mains de ton pote. Tu choisis le prénom écrit dessus : c'est ce détail qui rend le canular imparable.",
+      'Explose l’écran de sa télévision. La pièce ne bouge pas d’un millimètre — c’est ce qui rend la photo impossible à mettre en doute.',
     prompt:
-      "Place a giant oversized novelty cheque in the person's hands, held in front of them. The cheque is blank white with no text. Photorealistic, keep face and background.",
-    aspectRatio: '4:5',
-    model: 'pro',
-    thumbnailBefore: '/samples/gagnant-loto-avant.jpg',
-    thumbnailAfter: '/samples/gagnant-loto-apres.jpg',
-    emoji: '🎰',
-    textOverlays: [
-      {
-        x: 0.5,
-        y: 0.52,
-        maxWidth: 0.6,
-        fontScale: 0.038,
-        color: '#1a1a1a',
-        align: 'center',
-        defaultText: 'À L’ORDRE DE : TOI',
-        userInputLabelFr: 'Le prénom sur le chèque',
-        template: 'À L’ORDRE DE : {input}',
-        uppercase: true,
-      },
-      {
-        x: 0.5,
-        y: 0.6,
-        maxWidth: 0.5,
-        fontScale: 0.055,
-        color: '#0f5132',
-        align: 'center',
-        defaultText: '1 000 000 €',
-      },
-    ],
-  },
-  {
-    id: 'tatouage-rate',
-    slug: 'tatouage-rate',
-    nameFr: 'Le tatouage raté',
-    taglineFr: 'Encre définitive, regret immédiat',
-    descriptionFr:
-      "Ajoute un tatouage franchement mal dessiné sur l'avant-bras. Assez réaliste pour y croire, assez moche pour paniquer.",
-    prompt:
-      "Add a large amateur tattoo on the person's forearm, executed like a botched home job: shaky uneven linework, wobbly outlines that do not meet, patchy and blotchy ink density, crude shading. The subject of the tattoo is a crude drawing — never lettering. The ink must sit under the skin and follow the curve of the forearm, deforming with it, not float flat on top. ABSOLUTELY NO text, no letters, no numbers, no words, no captions anywhere in the image. Keep the face, pose, clothing and background identical. Photorealistic amateur smartphone photo.",
+      'Show the television in this room with a shattered screen. ALL of the following must be visible: a clear impact point with cracks radiating outward from it, large black bleeding patches of dead liquid crystal spreading from the cracks, and bright vertical lines across the rest of the panel. The television is switched off and dark apart from the damage. Keep the room strictly identical — same furniture, same walls, same camera angle, same lighting and shadows. Photorealistic amateur smartphone photo.',
     aspectRatio: '4:5',
     model: 'flash',
-    thumbnailBefore: '/samples/tatouage-rate-avant.jpg',
-    thumbnailAfter: '/samples/tatouage-rate-apres.jpg',
-    emoji: '🖊️',
+    thumbnailBefore: '/samples/tele-cassee-avant.jpg',
+    thumbnailAfter: '/samples/tele-cassee-apres.jpg',
+    emoji: '📺',
   },
   {
-    id: 'lion-salon',
-    slug: 'un-lion-dans-le-salon',
-    nameFr: 'Un lion dans le salon',
-    taglineFr: 'Nouveau colocataire',
+    id: 'chien-adopte',
+    slug: 'chien-adopte',
+    nameFr: 'Le chien adopté',
+    taglineFr: 'Surprise, on a un chien',
     descriptionFr:
-      "Installe un lion posé tranquillement au fond de la pièce, à la bonne échelle et avec la bonne lumière. Personne ne regarde le canapé après ça.",
+      'Installe un gros chien chez lui, comme s’il venait d’être adopté. Marche redoutablement bien envoyé à un conjoint ou à un colocataire.',
     prompt:
-      'Add a large realistic lion sitting calmly in the background of this indoor scene, correctly scaled and lit to match the room. Photorealistic.',
+      'Add one large adult dog sitting calmly in the middle of this room, facing the camera. The dog must be at correct real-world scale for the room, with its paws firmly on the floor, casting a soft shadow in the same direction as the other shadows in the photo, and its fur lit by the same light as the rest of the scene. Keep the room strictly identical — same furniture, same walls, same camera angle, same lighting. No people. Photorealistic amateur smartphone photo.',
     aspectRatio: '4:5',
     model: 'flash',
-    thumbnailBefore: '/samples/lion-salon-avant.jpg',
-    thumbnailAfter: '/samples/lion-salon-apres.jpg',
-    emoji: '🦁',
+    thumbnailBefore: '/samples/chien-adopte-avant.jpg',
+    thumbnailAfter: '/samples/chien-adopte-apres.jpg',
+    emoji: '🐶',
   },
   {
-    id: 'dubai',
-    slug: 'teleporte-a-dubai',
-    nameFr: 'Téléporté à Dubaï',
-    taglineFr: 'Parti sans rien dire',
+    id: 'crane-rase',
+    slug: 'crane-rase',
+    nameFr: 'Le crâne rasé',
+    taglineFr: 'Plus un cheveu',
     descriptionFr:
-      "Remplace le décor par un balcon de gratte-ciel à Dubaï au coucher du soleil, en gardant la personne parfaitement intacte. Idéal pour un « désolé, j'ai pris l'avion ce matin ».",
+      'Rase entièrement la tête de ton pote. Le visage et le décor restent identiques, et c’est précisément ce contraste qui fait douter.',
     prompt:
-      "Replace only the background and surrounding environment with a high-rise apartment balcony overlooking the Dubai skyline at sunset: tall illuminated towers in the distance, warm golden-orange sky. CRITICAL: do not move the camera, do not change the framing, crop or distance of the shot — the person keeps the exact same size, position and angle in the frame, only what is behind and around them changes. Place a glass balustrade in front of the person at roughly waist height, without overlapping their face or chest. Relight the person to match a low golden-hour sun coming from one side: warm orange-gold highlights on the side of the face, hair and clothing facing the light, a softer cooler shadow on the opposite side, and a soft shadow cast on the balcony floor in the direction away from the sun, consistent with the new setting. Keep the person's face, expression, hair, clothing and pose perfectly intact — only the lighting temperature and shadow direction adapt to the new scene. Photorealistic.",
-    aspectRatio: '4:5',
-    model: 'pro',
-    thumbnailBefore: '/samples/dubai-avant.jpg',
-    thumbnailAfter: '/samples/dubai-apres.jpg',
-    emoji: '🌇',
-  },
-  {
-    id: 'une-magazine',
-    slug: 'la-une-du-magazine',
-    nameFr: 'La une du magazine',
-    taglineFr: 'En couverture, rien que ça',
-    descriptionFr:
-      'Transforme la photo en couverture de magazine glacé. Tu écris le titre toi-même : la typo est propre, pas générée à l’arrache par un modèle.',
-    // « no brand names, no logos » est indispensable : sans cette consigne, le
-    // modèle remplit spontanément la couverture avec une marque de presse
-    // réelle. Une fausse couverture d'un titre existant sur un service payant,
-    // c'est une contrefaçon de marque — et les éditeurs de presse défendent la
-    // leur. Les zones de texte doivent rester vides : c'est `sharp` qui écrit.
-    prompt:
-      'Restyle this snapshot into the cover PHOTOGRAPH of a glossy fashion magazine. The image itself must visibly change: replace the surroundings with a clean seamless studio backdrop, light the face with a professional key light and soft fill, smooth and retouch the skin, deepen the contrast and colour grading, and recompose the subject as a centred portrait with clear empty headroom at the top and empty space across the bottom. Add the subtle sheen of printed glossy paper. Leaving the original casual snapshot untouched is wrong — it must look shot in a studio. Do NOT add any text, letters, numbers, logos, barcodes or magazine titles anywhere; those areas stay completely empty. Keep the person recognisable: same face, same hair, same clothing.',
-    aspectRatio: '4:5',
-    model: 'pro',
-    thumbnailBefore: '/samples/une-magazine-avant.jpg',
-    thumbnailAfter: '/samples/une-magazine-apres.jpg',
-    emoji: '📰',
-    textOverlays: [
-      {
-        x: 0.5,
-        y: 0.08,
-        maxWidth: 0.8,
-        fontScale: 0.1,
-        color: '#ffffff',
-        align: 'center',
-        // Nom de fantaisie, JAMAIS un titre de presse existant. Le texte par
-        // défaut est ce que produisent la plupart des utilisateurs (ils ne
-        // personnalisent pas), donc c'est lui qui déterminerait l'exposition du
-        // service à une contrefaçon de marque.
-        defaultText: 'FAUXTO',
-        userInputLabelFr: 'Le nom du magazine',
-        template: '{input}',
-        uppercase: true,
-      },
-      {
-        x: 0.5,
-        y: 0.82,
-        maxWidth: 0.75,
-        fontScale: 0.042,
-        color: '#ffffff',
-        align: 'center',
-        defaultText: 'LA PERSONNALITÉ DE L’ANNÉE',
-        userInputLabelFr: 'Le titre de couverture',
-        template: '{input}',
-        uppercase: true,
-      },
-    ],
-  },
-  {
-    id: 'deguisement',
-    slug: 'le-deguisement-surprise',
-    nameFr: 'Le déguisement surprise',
-    taglineFr: 'Costume intégral, visage visible',
-    descriptionFr:
-      "Habille ton pote d'une mascotte absurde en gardant son visage parfaitement reconnaissable. Aucun doute possible sur l'identité de la victime.",
-    // Le prompt d'origine du cahier des charges (« Dress the person in an
-    // absurd full-body mascot costume… ») s'est fait REFUSER par le filtre de
-    // sécurité du fournisseur lors du test réel — faux positif, probablement
-    // déclenché par « dress the person » + « full-body ». Cette reformulation
-    // décrit le costume plutôt que l'action d'habiller quelqu'un, et passe.
-    // À revérifier si tu changes de fournisseur.
-    prompt:
-      "Replace the person's clothing with a giant fluffy cartoon animal mascot suit, like a sports team mascot. The oversized costume head is removed so their own face stays fully visible and unchanged. Bright colours, plush fabric texture, photorealistic, keep the same background.",
+      'Shave the person\'s head completely bald, down to the skin. The scalp must be visibly paler than the face, with a faint tan line where the hairline used to be, and show realistic skin texture and a soft highlight from the ambient light. No stubble pattern, no hair left anywhere. Keep the face, expression, ears, eyebrows, skin tone, clothing, background, camera angle and lighting exactly as they are. Photorealistic amateur smartphone photo.',
     aspectRatio: '4:5',
     model: 'flash',
-    thumbnailBefore: '/samples/deguisement-avant.jpg',
-    thumbnailAfter: '/samples/deguisement-apres.jpg',
-    emoji: '🎭',
+    thumbnailBefore: '/samples/crane-rase-avant.jpg',
+    thumbnailAfter: '/samples/crane-rase-apres.jpg',
+    emoji: '🪒',
+  },
+  {
+    id: 'fuite-eau',
+    slug: 'fuite-d-eau',
+    nameFr: 'La fuite d’eau',
+    taglineFr: 'Ça vient du plafond',
+    descriptionFr:
+      'Fais couler l’eau du plafond chez lui. Le genre de photo qui déclenche un appel immédiat, parce que personne ne plaisante avec un dégât des eaux.',
+    prompt:
+      'Show this room with a serious water leak coming from the ceiling. ALL of the following must be visible: a large dark damp stain spreading across the ceiling with a sagging bulge at its centre, water running down the wall in wet streaks, drips falling, and a wide puddle on the floor that reflects the room. Keep the room strictly identical — same furniture, same camera angle, same lighting and shadows. No people. Photorealistic amateur smartphone photo.',
+    aspectRatio: '4:5',
+    model: 'flash',
+    thumbnailBefore: '/samples/fuite-eau-avant.jpg',
+    thumbnailAfter: '/samples/fuite-eau-apres.jpg',
+    emoji: '💧',
+  },
+  {
+    id: 'bague-fiancailles',
+    slug: 'bague-de-fiancailles',
+    nameFr: 'La bague de fiançailles',
+    taglineFr: 'Annonce-le sans le dire',
+    descriptionFr:
+      'Ajoute une bague de fiançailles à son doigt. Aucune violence, aucun dégât — juste une nouvelle que personne ne voit venir.',
+    prompt:
+      'Add a large diamond engagement ring on the ring finger of the person\'s left hand. The ring must sit correctly on the finger, follow its curve, and catch the same light as the skin around it, with a realistic sparkle on the stone. Keep the hand in the exact same position, and keep the face, expression, clothing, background, camera angle and lighting identical. Photorealistic amateur smartphone photo.',
+    aspectRatio: '4:5',
+    model: 'flash',
+    thumbnailBefore: '/samples/bague-fiancailles-avant.jpg',
+    thumbnailAfter: '/samples/bague-fiancailles-apres.jpg',
+    emoji: '💍',
+  },
+  {
+    id: 'peinture-renversee',
+    slug: 'peinture-renversee',
+    nameFr: 'La peinture renversée',
+    taglineFr: 'Le pot est tombé',
+    descriptionFr:
+      'Renverse un gros pot de peinture par terre chez lui. Sur un parquet ou un tapis clair, l’effet est immédiat.',
+    prompt:
+      'Show a large metal paint tin knocked over on the floor of this room, lying on its side, with a wide pool of thick white paint spreading out from it across the floor. ALL of the following must be visible: the pool with a raised glossy edge, several splashes and droplets thrown further out, and paint soaking into whatever surface it has landed on. Keep the room strictly identical — same furniture, same walls, same camera angle, same lighting and shadows. No people. Photorealistic amateur smartphone photo.',
+    aspectRatio: '4:5',
+    model: 'flash',
+    thumbnailBefore: '/samples/peinture-renversee-avant.jpg',
+    thumbnailAfter: '/samples/peinture-renversee-apres.jpg',
+    emoji: '🪣',
   },
   {
     id: 'personnalise',
