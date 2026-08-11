@@ -66,7 +66,7 @@ async function main(): Promise<void> {
     const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://fauxto.online';
     console.log(
       `\n${row?.created ? '✅ Code créé' : 'ℹ️  Code déjà existant'} : ${code} (${label})` +
-        `\n🔗 ${site}/r/${code}\n`,
+        `\n🔗 ${site}/${code}\n`,
     );
   }
 

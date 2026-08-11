@@ -17,7 +17,10 @@ export function JoinPartner({ siteUrl }: { siteUrl: string }) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const link = code ? `${siteUrl}/r/${code}` : null;
+  // Forme COURTE : c'est celle que le createur dictera a l'oral. `/r/<code>`
+  // continue de fonctionner, mais l'afficher ferait recopier deux caracteres
+  // de plus a chaque spectateur, pour rien.
+  const link = code ? `${siteUrl}/${code}` : null;
 
   async function join() {
     setState('joining');

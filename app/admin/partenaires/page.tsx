@@ -103,7 +103,7 @@ export default async function AdminPartenairesPage() {
                     <td className="py-3 pr-3">
                       <span className="font-bold">{r.label}</span>
                       <span className="block font-mono text-[11px] text-muted">
-                        {site}/r/{r.code}
+                        {site}/{r.code}
                       </span>
                     </td>
                     <td className="py-3 pr-3 text-right tabular-nums">{r.clicks}</td>

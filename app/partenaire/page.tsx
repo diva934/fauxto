@@ -77,7 +77,7 @@ export default async function PartenairePage() {
           <div className="mb-4 rounded-card border border-line bg-surface p-4">
             <h2 className="text-sm font-bold">Comment ça marche</h2>
             <ol className="mt-2 space-y-1.5 text-sm leading-relaxed text-muted">
-              <li>1. Tu reçois un lien personnel du type {siteUrl}/r/toncode.</li>
+              <li>1. Tu reçois un lien personnel du type {siteUrl}/tonpseudo.</li>
               <li>2. Tu le mets en description de tes vidéos.</li>
               <li>
                 3. Chaque personne qui clique est rattachée à toi pendant 30
@@ -100,7 +100,7 @@ export default async function PartenairePage() {
           <div className="rounded-card border border-line bg-surface p-4">
             <p className="text-xs text-muted">Ton lien</p>
             <p className="mt-1 font-mono text-sm break-all">
-              {siteUrl}/r/{stats.code}
+              {siteUrl}/{stats.code}
             </p>
             <p className="mt-2 text-xs text-muted">
               Commission : {Math.round(stats.commission_rate * 100)} % de chaque
